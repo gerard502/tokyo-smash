@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tokyo Smash 🏸</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;600;700&display=swap');
+  :root{--green:#00c853;--green-dark:#009624;--green-light:#b9f6ca;--court:#1a472a;--white:#f5fff7;--gray:#b0bec5;--accent:#ffe600;--orange:#ff9800;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Noto Sans KR',sans-serif;background:var(--court);color:var(--white);min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(255,255,255,0.04) 59px,rgba(255,255,255,0.04) 61px),repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(255,255,255,0.04) 59px,rgba(255,255,255,0.04) 61px);pointer-events:none;z-index:0}
+  .container{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 16px 100px}
+  .nav{display:flex;gap:8px;justify-content:center;padding:16px 0 0}
+  .nav-btn{font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:2px;padding:8px 20px;border-radius:20px;border:1px solid rgba(255,255,255,0.2);background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+  .nav-btn.active{background:var(--green);border-color:var(--green);color:#000}
+  .nav-btn:hover:not(.active){border-color:var(--green);color:var(--green)}
+  header{text-align:center;padding:24px 0 24px}
+  .logo-shuttle{font-size:2.8rem;display:block;animation:spin-float 3s ease-in-out infinite}
+  @keyframes spin-float{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-8px) rotate(8deg)}}
+  .logo-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.8rem,10vw,4.2rem);letter-spacing:4px;line-height:1;color:var(--white);text-shadow:0 0 30px rgba(0,200,83,0.6),3px 3px 0 var(--green-dark)}
+  .logo-title span{color:var(--accent)}
+  .logo-sub{font-size:0.75rem;letter-spacing:3px;color:var(--green-light);margin-top:4px;text-transform:uppercase;opacity:0.8}
+  .date-badge{display:inline-block;margin-top:12px;background:rgba(0,200,83,0.15);border:1px solid rgba(0,200,83,0.3);border-radius:20px;padding:4px 16px;font-size:0.8rem;color:var(--green-light);letter-spacing:1px}
+  .conn-badge{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:0.75rem;color:var(--white);background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:20px;padding:4px 12px}
+  .conn-dot{width:8px;height:8px;border-radius:50%;background:var(--gray);transition:background 0.3s}
+  .conn-dot.online{background:#00ff88;box-shadow:0 0 6px #00ff88}
+  .card{background:rgba(255,255,255,0.05);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px;margin-bottom:20px}
+  .section-title{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:3px;color:var(--green);margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .count-badge{font-family:'Noto Sans KR',sans-serif;font-size:0.7rem;font-weight:700;background:var(--green);color:#000;border-radius:10px;padding:2px 8px;letter-spacing:0;line-height:1.4}
+  .attend-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
+  .attend-chip{background:rgba(0,200,83,0.15);border:1px solid var(--green);border-radius:10px;padding:10px 12px;text-align:center}
+  .attend-chip.rested{background:rgba(255,152,0,0.15);border-color:var(--orange)}
+  .attend-chip-name{font-size:0.88rem;font-weight:700;color:var(--green-light)}
+  .attend-chip.rested .attend-chip-name{color:#ffcc80}
+  .attend-chip-rating{font-family:'Bebas Neue',sans-serif;font-size:0.75rem;letter-spacing:1px;margin-top:2px}
+  .attend-chip-rest{font-size:0.65rem;color:var(--orange);margin-top:2px}
+  .r-low{color:#90a4ae}.r-mid{color:var(--accent)}.r-high{color:#ff7043}.r-top{color:#ce93d8}
+  .empty-state{text-align:center;padding:24px;color:rgba(255,255,255,0.3);font-size:0.88rem}
+  .empty-link{color:var(--green);text-decoration:none;font-weight:700}
+  .match-section{text-align:center}
+  .btn{background:var(--green);color:#000;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1px;border:none;border-radius:10px;padding:10px 18px;cursor:pointer;transition:transform 0.1s,background 0.2s;white-space:nowrap}
+  .btn:active{transform:scale(0.96)}.btn:hover{background:var(--green-dark)}
+  .btn-match{width:100%;padding:16px;font-size:1.3rem;letter-spacing:3px;border-radius:14px;background:linear-gradient(135deg,var(--green),var(--green-dark));box-shadow:0 4px 20px rgba(0,200,83,0.35);transition:box-shadow 0.2s}
+  .btn-match:hover{box-shadow:0 6px 28px rgba(0,200,83,0.5)}
+  .btn-match:disabled{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.3);box-shadow:none;cursor:not-allowed}
+  .rest-priority-badge{display:inline-flex;align-items:center;gap:4px;font-family:'Noto Sans KR',sans-serif;font-size:0.72rem;font-weight:700;background:rgba(255,152,0,0.2);border:1px solid rgba(255,152,0,0.4);color:var(--orange);border-radius:10px;padding:2px 8px}
+  .match-hint{margin-top:8px;font-size:0.78rem;color:var(--gray)}
+  .results-wrap{display:none}.results-wrap.visible{display:block}
+  .games-list{display:flex;flex-direction:column;gap:14px}
+  .game-card{background:rgba(0,200,83,0.06);border:1px solid rgba(0,200,83,0.2);border-radius:14px;padding:14px 16px;animation:slide-in 0.4s ease both}
+  @keyframes slide-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  .court-label{font-family:'Bebas Neue',sans-serif;font-size:0.75rem;letter-spacing:3px;color:rgba(0,200,83,0.6);margin-bottom:8px}
+  .game-teams{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+  .team-box{flex:1;background:rgba(255,255,255,0.05);border-radius:10px;padding:10px 12px;text-align:center}
+  .team-label{font-family:'Bebas Neue',sans-serif;font-size:0.75rem;letter-spacing:2px;color:var(--green);margin-bottom:4px}
+  .team-players{font-size:0.85rem;font-weight:600;line-height:1.6;color:var(--white)}
+  .team-rating{font-size:0.7rem;color:var(--gray);margin-top:4px}
+  .vs-badge{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--accent);text-shadow:0 0 10px rgba(255,230,0,0.5);flex-shrink:0}
+  .balance-bar-wrap{margin-bottom:12px}
+  .balance-label{font-size:0.7rem;color:var(--gray);margin-bottom:4px;display:flex;justify-content:space-between}
+  .balance-bar-bg{height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden}
+  .balance-bar-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--accent));border-radius:3px;transition:width 0.4s}
+  .score-section{border-top:1px solid rgba(255,255,255,0.07);padding-top:12px}
+  .score-row{display:flex;align-items:center;gap:8px}
+  .score-label{font-size:0.75rem;color:var(--gray);white-space:nowrap;flex-shrink:0;min-width:36px}
+  .score-inputs{display:flex;align-items:center;gap:6px;flex:1}
+  .score-input{flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:var(--white);font-family:'Bebas Neue',sans-serif;font-size:1.2rem;padding:6px 8px;outline:none;text-align:center;transition:border-color 0.2s;min-width:0}
+  .score-input:focus{border-color:var(--green)}
+  .score-input::-webkit-inner-spin-button{opacity:0.4}
+  .score-dash{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--gray);flex-shrink:0}
+  .score-submit-btn{background:var(--green);color:#000;font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:1px;border:none;border-radius:8px;padding:8px 14px;cursor:pointer;transition:all 0.15s;white-space:nowrap;flex-shrink:0}
+  .score-submit-btn:hover{background:var(--green-dark)}
+  .result-done{font-size:0.8rem;color:var(--green);padding:4px 0}
+  .rest-card{background:rgba(255,152,0,0.06);border:1px dashed rgba(255,152,0,0.35);border-radius:14px;padding:14px 18px;animation:slide-in 0.4s ease both}
+  .rest-title{font-family:'Bebas Neue',sans-serif;font-size:0.85rem;letter-spacing:2px;color:var(--orange);margin-bottom:8px}
+  .rest-names{display:flex;flex-wrap:wrap;gap:6px}
+  .rest-chip{background:rgba(255,152,0,0.15);border:1px solid rgba(255,152,0,0.3);border-radius:8px;padding:4px 10px;font-size:0.82rem;font-weight:600;color:var(--orange)}
+  .action-row{display:flex;gap:8px;margin-top:14px}
+  .btn-outline{flex:1;background:transparent;border:1px solid rgba(255,255,255,0.2);color:var(--white);border-radius:10px;padding:10px;font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:2px;cursor:pointer;transition:all 0.2s}
+  .btn-outline:hover{border-color:var(--green);color:var(--green)}
+
+  /* ── 히스토리 ── */
+  .history-wrap{display:none}.history-wrap.visible{display:block}
+  .history-toggle{width:100%;background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;border-radius:10px;padding:10px;cursor:pointer;transition:all 0.2s;margin-bottom:14px}
+  .history-toggle:hover{border-color:var(--green);color:var(--green)}
+  .history-list{display:flex;flex-direction:column;gap:12px;max-height:500px;overflow-y:auto;padding-right:4px}
+  .history-list::-webkit-scrollbar{width:4px}
+  .history-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:4px}
+  .history-round{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 14px}
+  .history-round-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .history-round-title{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;color:var(--green)}
+  .history-round-date{font-size:0.72rem;color:var(--gray)}
+  .history-game{display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:8px 10px;background:rgba(255,255,255,0.03);border-radius:8px}
+  .history-court{font-family:'Bebas Neue',sans-serif;font-size:0.8rem;color:rgba(0,200,83,0.5);min-width:24px}
+  .history-teams{flex:1;font-size:0.8rem;color:var(--white)}
+  .history-score{font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:1px;color:var(--accent);flex-shrink:0}
+  .history-winner{font-size:0.68rem;color:var(--green);margin-top:1px}
+  .history-empty{text-align:center;padding:16px;color:rgba(255,255,255,0.25);font-size:0.85rem}
+  .history-date-group{margin-bottom:16px}
+  .history-date-label{font-family:'Bebas Neue',sans-serif;font-size:0.85rem;letter-spacing:2px;color:rgba(255,255,255,0.3);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.06)}
+
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--green);color:#000;font-weight:700;font-size:0.85rem;padding:10px 22px;border-radius:20px;box-shadow:0 4px 20px rgba(0,200,83,0.4);transition:transform 0.3s ease;z-index:999;white-space:nowrap}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="nav">
+    <a class="nav-btn active" href="index.html">🏸 메인</a>
+    <a class="nav-btn" href="members.html">👥 멤버 관리</a>
+    <a class="nav-btn" href="history.html">📋 히스토리</a>
+  </nav>
+  <header>
+    <span class="logo-shuttle">🏸</span>
+    <div class="logo-title">TOKYO <span>SMASH</span></div>
+    <div class="logo-sub">배드민턴 동아리 · Badminton Club</div>
+    <div class="date-badge" id="dateBadge"></div>
+    <div class="conn-badge"><div class="conn-dot" id="connDot"></div><span id="connText">연결 중...</span></div>
+  </header>
+
+  <!-- 출석 -->
+  <div class="card">
+    <div class="section-title">✅ 오늘 출석 <span class="count-badge" id="presentCount">0명</span></div>
+    <div class="attend-grid" id="attendGrid"><div class="empty-state">연결 중...</div></div>
+  </div>
+
+  <!-- 매칭 -->
+  <div class="card match-section">
+    <div class="section-title">
+      🎯 게임 매칭
+      <span class="rest-priority-badge" id="restPriorityBadge" style="display:none">☕ 휴식자 우선</span>
+    </div>
+    <button class="btn btn-match" id="matchBtn" onclick="generateMatches()" disabled>🏸 밸런스 대진 생성</button>
+    <div class="match-hint" id="matchHint">출석 멤버가 4명 이상이어야 매칭됩니다</div>
+  </div>
+
+  <!-- 대진표 -->
+  <div class="card results-wrap" id="resultsSection">
+    <div class="section-title">🏆 대진표</div>
+    <div class="games-list" id="gamesList"></div>
+    <div class="action-row">
+      <button class="btn-outline" onclick="generateMatches()">🔀 다시 섞기</button>
+      <button class="btn-outline" onclick="clearResults()">✖ 닫기</button>
+    </div>
+  </div>
+
+  <!-- 히스토리 -->
+  <div class="card">
+    <div class="section-title">📋 매칭 히스토리</div>
+    <button class="history-toggle" id="historyToggle" onclick="toggleHistory()">▼ 히스토리 보기</button>
+    <div class="history-wrap" id="historyWrap">
+      <div class="history-list" id="historyList"><div class="history-empty">아직 기록이 없어요</div></div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue, remove, update, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey:"AIzaSyCTcxZfr-L-oe25DJyNMj3e8vdEgmbgqog",
+    authDomain:"tokyo-smash.firebaseapp.com",
+    databaseURL:"https://tokyo-smash-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId:"tokyo-smash",storageBucket:"tokyo-smash.firebasestorage.app",
+    messagingSenderId:"885467955971",
+    appId:"1:885467955971:web:e1ad21d28e0a910a02df36",
+    measurementId:"G-D6V57RK9VK"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const MAX_COURTS = 3;
+  const HISTORY_DAYS = 84; // 12주
+  const todayKey = new Date().toISOString().slice(0,10);
+
+  document.getElementById('dateBadge').textContent = new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
+
+  const membersRef = ref(db,'members');
+  const presentRef = ref(db,`present/${todayKey}`);
+  const matchRef   = ref(db,`matches/${todayKey}`);
+  const historyRef = ref(db,'history');
+
+  onValue(ref(db,'.info/connected'), snap=>{
+    const on=snap.val();
+    document.getElementById('connDot').className='conn-dot'+(on?' online':'');
+    document.getElementById('connText').textContent=on?'실시간 연결됨 ✓':'오프라인';
+  });
+
+  let members={}, present={}, lastRest=[];
+
+  onValue(membersRef, snap=>{ members=snap.val()||{}; render(); });
+  onValue(presentRef, snap=>{ present=snap.val()||{}; render(); });
+  onValue(matchRef, snap=>{
+    const d=snap.val();
+    if(d&&d.games){
+      lastRest = d.rest ? d.rest : [];
+      renderResults(d.games,d.rest,d.results||{});
+    } else {
+      document.getElementById('resultsSection').classList.remove('visible');
+    }
+  });
+  onValue(historyRef, snap=>{ renderHistory(snap.val()||{}); });
+
+  // 앱 시작 시 오래된 히스토리 자동 삭제
+  purgeOldHistory();
+
+  function render() {
+    const grid = document.getElementById('attendGrid');
+    const presentIds = Object.keys(present).filter(id=>members[id]);
+
+    if(!presentIds.length){
+      grid.innerHTML=`<div class="empty-state">아직 출석한 멤버가 없어요<br><a class="empty-link" href="members.html">👥 멤버 관리에서 출석 체크</a></div>`;
+    } else {
+      // 지난 라운드 휴식자 표시
+      grid.innerHTML=presentIds.map(id=>{
+        const m=members[id];
+        const r=m.rating??50;
+        const rc=r>=80?'r-top':r>=60?'r-high':r>=35?'r-mid':'r-low';
+        const wasRested = lastRest.includes(m.name);
+        return `<div class="attend-chip ${wasRested?'rested':''}">
+          <div class="attend-chip-name">${esc(m.name)}</div>
+          <div class="attend-chip-rating ${rc}">Lv.${r}</div>
+          ${wasRested?'<div class="attend-chip-rest">☕ 전 라운드 휴식</div>':''}
+        </div>`;
+      }).join('');
+    }
+
+    const cnt=presentIds.length;
+    const courts=Math.min(Math.floor(cnt/4),MAX_COURTS);
+    const restCnt=cnt-courts*4;
+    const restedCnt=lastRest.filter(n=>presentIds.some(id=>members[id]?.name===n)).length;
+
+    document.getElementById('presentCount').textContent=cnt+'명';
+
+    const badge=document.getElementById('restPriorityBadge');
+    if(restedCnt>0&&restCnt>0){badge.style.display='';} else badge.style.display='none';
+
+    const btn=document.getElementById('matchBtn'), hint=document.getElementById('matchHint');
+    if(cnt<4){btn.disabled=true;hint.textContent=`출석 멤버가 4명 이상이어야 매칭됩니다 (현재 ${cnt}명)`;}
+    else{btn.disabled=false;hint.textContent=`출석 ${cnt}명 · ${courts}코트 · ${restCnt>0?`휴식 ${restCnt}명 (휴식자 우선)`:'전원 참가'}`;}
+  }
+
+  window.generateMatches = async function() {
+    const presentIds = Object.keys(present).filter(id=>members[id]);
+    const courts = Math.min(Math.floor(presentIds.length/4), MAX_COURTS);
+    const activeCnt = courts*4;
+
+    // 지난 라운드 휴식자 우선 배정
+    const restedIds = presentIds.filter(id=>lastRest.includes(members[id]?.name));
+    const nonRestedIds = presentIds.filter(id=>!lastRest.includes(members[id]?.name));
+
+    // 휴식자 먼저 + 나머지 랜덤 섞기
+    const ordered = [...shuffle(restedIds), ...shuffle(nonRestedIds)];
+    const active = ordered.slice(0, activeCnt);
+    const restIds = ordered.slice(activeCnt);
+
+    // 레이팅 순 스네이크 드래프트로 코트 배정
+    const sorted=[...active].sort((a,b)=>(members[b]?.rating??50)-(members[a]?.rating??50));
+    const courtGroups=Array.from({length:courts},()=>[]);
+    sorted.forEach((id,i)=>{
+      const round=Math.floor(i/courts),pos=i%courts;
+      courtGroups[round%2===0?pos:courts-1-pos].push(id);
+    });
+
+    const games=courtGroups.map((group,ci)=>{
+      const split=bestSplit(group);
+      return{court:ci+1,
+        teamA:split.a.map(id=>({name:members[id]?.name,rating:members[id]?.rating??50,id})),
+        teamB:split.b.map(id=>({name:members[id]?.name,rating:members[id]?.rating??50,id})),
+        gameId:`c${ci+1}_${Date.now()}`};
+    });
+
+    const rest=restIds.map(id=>members[id]?.name).filter(Boolean);
+    await set(matchRef,{games,rest:rest.length?rest:null,results:{},createdAt:Date.now()});
+
+    const restMsg = restedIds.length>0 ? ` (휴식자 ${restedIds.length}명 우선 배정)` : '';
+    toast(`밸런스 대진 생성!${restMsg} 🏸`);
+  };
+
+  function bestSplit(ids){
+    const pairs=[[0,1],[0,2],[0,3]];let best=null;
+    for(const [i,j] of pairs){
+      const a=[ids[i],ids[j]],b=ids.filter((_,k)=>k!==i&&k!==j);
+      const rA=a.reduce((s,id)=>s+(members[id]?.rating??50),0);
+      const rB=b.reduce((s,id)=>s+(members[id]?.rating??50),0);
+      const diff=Math.abs(rA-rB);
+      if(!best||diff<best.diff) best={a,b,diff};
+    }
+    return best;
+  }
+
+  function calcRatingDelta(winScore,loseScore){
+    const total=winScore+loseScore;
+    if(total===0) return 5;
+    return Math.round(2+(winScore-loseScore)/total*13);
+  }
+
+  function renderResults(games,rest,results){
+    const section=document.getElementById('resultsSection');
+    const list=document.getElementById('gamesList');
+    let html=games.map((g,i)=>{
+      const rA=g.teamA.reduce((s,p)=>s+p.rating,0);
+      const rB=g.teamB.reduce((s,p)=>s+p.rating,0);
+      const pctA=Math.round(rA/(rA+rB)*100)||50;
+      const done=results[g.gameId];
+      const scoreHtml=done
+        ?`<div class="result-done">✓ 팀 ${done.winner} 승 ${done.scoreA} : ${done.scoreB} · 레이팅 ±${done.delta} 반영</div>`
+        :`<div class="score-row">
+            <span class="score-label">점수</span>
+            <div class="score-inputs">
+              <input class="score-input" type="number" id="sA_${g.gameId}" min="0" max="99" placeholder="A">
+              <span class="score-dash">:</span>
+              <input class="score-input" type="number" id="sB_${g.gameId}" min="0" max="99" placeholder="B">
+            </div>
+            <button class="score-submit-btn" onclick="submitResult('${g.gameId}',${i})">입력</button>
+          </div>`;
+      return `<div class="game-card" style="animation-delay:${i*0.08}s">
+        <div class="court-label">🏟 COURT ${g.court}</div>
+        <div class="game-teams">
+          <div class="team-box">
+            <div class="team-label">팀 A</div>
+            <div class="team-players">${g.teamA.map(p=>esc(p.name)).join('<br>')}</div>
+            <div class="team-rating">합산 ${rA}</div>
+          </div>
+          <div class="vs-badge">VS</div>
+          <div class="team-box">
+            <div class="team-label">팀 B</div>
+            <div class="team-players">${g.teamB.map(p=>esc(p.name)).join('<br>')}</div>
+            <div class="team-rating">합산 ${rB}</div>
+          </div>
+        </div>
+        <div class="balance-bar-wrap">
+          <div class="balance-label"><span>팀A ${pctA}%</span><span>팀B ${100-pctA}%</span></div>
+          <div class="balance-bar-bg"><div class="balance-bar-fill" style="width:${pctA}%"></div></div>
+        </div>
+        <div class="score-section">${scoreHtml}</div>
+      </div>`;
+    }).join('');
+    if(rest&&rest.length){
+      html+=`<div class="rest-card" style="animation-delay:${games.length*0.08}s">
+        <div class="rest-title">☕ 휴식 (${rest.length}명) · 다음 라운드 우선 배정</div>
+        <div class="rest-names">${rest.map(n=>`<span class="rest-chip">${esc(n)}</span>`).join('')}</div>
+      </div>`;
+    }
+    list.innerHTML=html;
+    section.classList.add('visible');
+    section.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  window.submitResult = async function(gameId,idx){
+    const sA=parseInt(document.getElementById(`sA_${gameId}`)?.value)||0;
+    const sB=parseInt(document.getElementById(`sB_${gameId}`)?.value)||0;
+    if(sA===sB){toast('동점은 입력할 수 없어요!');return;}
+
+    const snap=await new Promise(res=>onValue(matchRef,res,{onlyOnce:true}));
+    const data=snap.val(); if(!data||!data.games) return;
+    const g=data.games[idx]; if(!g) return;
+
+    const winner=sA>sB?'A':'B';
+    const delta=calcRatingDelta(Math.max(sA,sB),Math.min(sA,sB));
+    const nameToId={};
+    for(const [id,m] of Object.entries(members)) nameToId[m.name]=id;
+    const winners=winner==='A'?g.teamA:g.teamB, losers=winner==='A'?g.teamB:g.teamA;
+    const updates={};
+    for(const p of winners){const id=nameToId[p.name];if(id)updates[`members/${id}/rating`]=Math.min(100,(members[id]?.rating??50)+delta);}
+    for(const p of losers){const id=nameToId[p.name];if(id)updates[`members/${id}/rating`]=Math.max(1,(members[id]?.rating??50)-delta);}
+    updates[`matches/${todayKey}/results/${gameId}`]={winner,scoreA:sA,scoreB:sB,delta};
+
+    // 히스토리에 저장
+    const roundId=`${todayKey}_${gameId}`;
+    updates[`history/${roundId}`]={
+      date:todayKey,
+      court:g.court,
+      teamA:g.teamA.map(p=>p.name),
+      teamB:g.teamB.map(p=>p.name),
+      scoreA:sA,scoreB:sB,
+      winner,delta,
+      createdAt:Date.now()
+    };
+
+    await update(ref(db),updates);
+    toast(`팀 ${winner} 승 ${sA}:${sB} · 레이팅 ±${delta} 반영 🏆`);
+  };
+
+  window.clearResults=async function(){await remove(matchRef);};
+
+  // ── 히스토리 렌더 ──
+  function renderHistory(history){
+    const list=document.getElementById('historyList');
+    const entries=Object.entries(history).sort((a,b)=>b[1].createdAt-a[1].createdAt);
+    if(!entries.length){list.innerHTML='<div class="history-empty">아직 기록이 없어요</div>';return;}
+
+    // 날짜별 그룹핑
+    const byDate={};
+    for(const [,h] of entries){
+      if(!byDate[h.date]) byDate[h.date]=[];
+      byDate[h.date].push(h);
+    }
+
+    list.innerHTML=Object.entries(byDate)
+      .sort((a,b)=>b[0].localeCompare(a[0]))
+      .map(([date,games])=>{
+        const label=new Date(date).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
+        const gameRows=games
+          .sort((a,b)=>a.court-b.court)
+          .map(h=>`<div class="history-game">
+            <span class="history-court">C${h.court}</span>
+            <div class="history-teams">
+              <div>${h.teamA.map(esc).join(' · ')} <b style="color:${h.winner==='A'?'var(--green)':'var(--gray)'}">vs</b> ${h.teamB.map(esc).join(' · ')}</div>
+              <div class="history-winner">팀 ${h.winner} 승 · 레이팅 ±${h.delta}</div>
+            </div>
+            <span class="history-score">${h.scoreA}:${h.scoreB}</span>
+          </div>`).join('');
+        return `<div class="history-date-group">
+          <div class="history-date-label">${label}</div>
+          ${gameRows}
+        </div>`;
+      }).join('');
+  }
+
+  // ── 히스토리 토글 ──
+  window.toggleHistory=function(){
+    const wrap=document.getElementById('historyWrap');
+    const btn=document.getElementById('historyToggle');
+    const visible=wrap.classList.toggle('visible');
+    btn.textContent=visible?'▲ 히스토리 닫기':'▼ 히스토리 보기';
+  };
+
+  // ── 12주(84일) 지난 히스토리 자동 삭제 ──
+  async function purgeOldHistory(){
+    const cutoff=new Date();
+    cutoff.setDate(cutoff.getDate()-HISTORY_DAYS);
+    const cutoffKey=cutoff.toISOString().slice(0,10);
+    const snap=await new Promise(res=>onValue(historyRef,res,{onlyOnce:true}));
+    const history=snap.val()||{};
+    const updates={};
+    for(const [id,h] of Object.entries(history)){
+      if(h.date<cutoffKey) updates[`history/${id}`]=null;
+    }
+    if(Object.keys(updates).length>0){
+      await update(ref(db),updates);
+    }
+  }
+
+  function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+  function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  let tt;
+  function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2800);}
+</script>
+</body>
+</html>
