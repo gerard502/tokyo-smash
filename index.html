@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tokyo Smash 🏸</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;600;700&display=swap');
+  :root {
+    --green:#00c853; --green-dark:#009624; --green-light:#b9f6ca;
+    --court:#1a472a; --white:#f5fff7; --gray:#b0bec5; --accent:#ffe600; --orange:#ff9800;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Noto Sans KR',sans-serif;background:var(--court);color:var(--white);min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(255,255,255,0.04) 59px,rgba(255,255,255,0.04) 61px),repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(255,255,255,0.04) 59px,rgba(255,255,255,0.04) 61px);pointer-events:none;z-index:0}
+  .container{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 16px 100px}
+
+  /* NAV */
+  .nav{display:flex;gap:8px;justify-content:center;padding:16px 0 0}
+  .nav-btn{font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:2px;padding:8px 20px;border-radius:20px;border:1px solid rgba(255,255,255,0.2);background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+  .nav-btn.active{background:var(--green);border-color:var(--green);color:#000}
+  .nav-btn:hover:not(.active){border-color:var(--green);color:var(--green)}
+
+  header{text-align:center;padding:24px 0 24px}
+  .logo-shuttle{font-size:2.8rem;display:block;animation:spin-float 3s ease-in-out infinite}
+  @keyframes spin-float{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-8px) rotate(8deg)}}
+  .logo-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.8rem,10vw,4.2rem);letter-spacing:4px;line-height:1;color:var(--white);text-shadow:0 0 30px rgba(0,200,83,0.6),3px 3px 0 var(--green-dark)}
+  .logo-title span{color:var(--accent)}
+  .logo-sub{font-size:0.75rem;letter-spacing:3px;color:var(--green-light);margin-top:4px;text-transform:uppercase;opacity:0.8}
+  .date-badge{display:inline-block;margin-top:12px;background:rgba(0,200,83,0.15);border:1px solid rgba(0,200,83,0.3);border-radius:20px;padding:4px 16px;font-size:0.8rem;color:var(--green-light);letter-spacing:1px}
+  .conn-badge{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:0.75rem;color:var(--white);background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:20px;padding:4px 12px}
+  .conn-dot{width:8px;height:8px;border-radius:50%;background:var(--gray);transition:background 0.3s}
+  .conn-dot.online{background:#00ff88;box-shadow:0 0 6px #00ff88}
+
+  .card{background:rgba(255,255,255,0.05);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px;margin-bottom:20px}
+  .section-title{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:3px;color:var(--green);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .count-badge{font-family:'Noto Sans KR',sans-serif;font-size:0.7rem;font-weight:700;background:var(--green);color:#000;border-radius:10px;padding:2px 8px;letter-spacing:0;line-height:1.4}
+
+  /* 출석 멤버 그리드 */
+  .attend-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+  .attend-chip{background:rgba(0,200,83,0.15);border:1px solid var(--green);border-radius:10px;padding:10px 12px;text-align:center}
+  .attend-chip-name{font-size:0.88rem;font-weight:700;color:var(--green-light)}
+  .attend-chip-rating{font-family:'Bebas Neue',sans-serif;font-size:0.78rem;letter-spacing:1px;margin-top:2px}
+  .r-low{color:#90a4ae} .r-mid{color:var(--accent)} .r-high{color:#ff7043} .r-top{color:#ce93d8}
+
+  .empty-state{text-align:center;padding:24px;color:rgba(255,255,255,0.3);font-size:0.88rem}
+  .empty-link{color:var(--green);text-decoration:none;font-weight:700}
+  .empty-link:hover{text-decoration:underline}
+
+  /* 매칭 */
+  .match-section{text-align:center}
+  .btn{background:var(--green);color:#000;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1px;border:none;border-radius:10px;padding:10px 18px;cursor:pointer;transition:transform 0.1s,background 0.2s;white-space:nowrap}
+  .btn:active{transform:scale(0.96)} .btn:hover{background:var(--green-dark)}
+  .btn-match{width:100%;padding:16px;font-size:1.3rem;letter-spacing:3px;border-radius:14px;background:linear-gradient(135deg,var(--green),var(--green-dark));box-shadow:0 4px 20px rgba(0,200,83,0.35);transition:box-shadow 0.2s,transform 0.1s}
+  .btn-match:hover{box-shadow:0 6px 28px rgba(0,200,83,0.5)}
+  .btn-match:disabled{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.3);box-shadow:none;cursor:not-allowed}
+  .match-hint{margin-top:8px;font-size:0.78rem;color:var(--gray)}
+
+  /* 결과 */
+  .results-wrap{display:none} .results-wrap.visible{display:block}
+  .games-list{display:flex;flex-direction:column;gap:14px}
+  .game-card{background:rgba(0,200,83,0.06);border:1px solid rgba(0,200,83,0.2);border-radius:14px;padding:14px 16px;animation:slide-in 0.4s ease both}
+  @keyframes slide-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  .court-label{font-family:'Bebas Neue',sans-serif;font-size:0.75rem;letter-spacing:3px;color:rgba(0,200,83,0.6);margin-bottom:8px}
+  .game-teams{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+  .team-box{flex:1;background:rgba(255,255,255,0.05);border-radius:10px;padding:10px 12px;text-align:center}
+  .team-label{font-family:'Bebas Neue',sans-serif;font-size:0.75rem;letter-spacing:2px;color:var(--green);margin-bottom:4px}
+  .team-players{font-size:0.85rem;font-weight:600;line-height:1.6;color:var(--white)}
+  .team-rating{font-size:0.7rem;color:var(--gray);margin-top:4px}
+  .vs-badge{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--accent);text-shadow:0 0 10px rgba(255,230,0,0.5);flex-shrink:0}
+  .balance-bar-wrap{margin-bottom:10px}
+  .balance-label{font-size:0.7rem;color:var(--gray);margin-bottom:4px;display:flex;justify-content:space-between}
+  .balance-bar-bg{height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden}
+  .balance-bar-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--accent));border-radius:3px;transition:width 0.4s}
+  .result-row{display:flex;align-items:center;gap:8px;border-top:1px solid rgba(255,255,255,0.07);padding-top:10px}
+  .result-label{font-size:0.75rem;color:var(--gray);white-space:nowrap;flex-shrink:0}
+  .result-btn{flex:1;padding:7px 0;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:var(--white);font-family:'Noto Sans KR',sans-serif;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.2s}
+  .result-btn:hover{background:rgba(255,255,255,0.1)}
+  .result-done{font-size:0.78rem;color:var(--green)}
+  .rest-card{background:rgba(255,152,0,0.06);border:1px dashed rgba(255,152,0,0.35);border-radius:14px;padding:14px 18px;animation:slide-in 0.4s ease both}
+  .rest-title{font-family:'Bebas Neue',sans-serif;font-size:0.85rem;letter-spacing:2px;color:var(--orange);margin-bottom:8px}
+  .rest-names{display:flex;flex-wrap:wrap;gap:6px}
+  .rest-chip{background:rgba(255,152,0,0.15);border:1px solid rgba(255,152,0,0.3);border-radius:8px;padding:4px 10px;font-size:0.82rem;font-weight:600;color:var(--orange)}
+  .action-row{display:flex;gap:8px;margin-top:14px}
+  .btn-outline{flex:1;background:transparent;border:1px solid rgba(255,255,255,0.2);color:var(--white);border-radius:10px;padding:10px;font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:2px;cursor:pointer;transition:all 0.2s}
+  .btn-outline:hover{border-color:var(--green);color:var(--green)}
+
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--green);color:#000;font-weight:700;font-size:0.85rem;padding:10px 22px;border-radius:20px;box-shadow:0 4px 20px rgba(0,200,83,0.4);transition:transform 0.3s ease;z-index:999;white-space:nowrap}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="nav">
+    <a class="nav-btn active" href="index.html">🏸 메인</a>
+    <a class="nav-btn" href="members.html">👥 멤버 관리</a>
+  </nav>
+
+  <header>
+    <span class="logo-shuttle">🏸</span>
+    <div class="logo-title">TOKYO <span>SMASH</span></div>
+    <div class="logo-sub">배드민턴 동아리 · Badminton Club</div>
+    <div class="date-badge" id="dateBadge"></div>
+    <div class="conn-badge">
+      <div class="conn-dot" id="connDot"></div>
+      <span id="connText">연결 중...</span>
+    </div>
+  </header>
+
+  <!-- 오늘 출석 -->
+  <div class="card">
+    <div class="section-title">
+      ✅ 오늘 출석
+      <span class="count-badge" id="presentCount">0명</span>
+    </div>
+    <div class="attend-grid" id="attendGrid">
+      <div class="empty-state">연결 중...</div>
+    </div>
+  </div>
+
+  <!-- 게임 매칭 -->
+  <div class="card match-section">
+    <div class="section-title">🎯 게임 매칭</div>
+    <button class="btn btn-match" id="matchBtn" onclick="generateMatches()" disabled>🏸 밸런스 대진 생성</button>
+    <div class="match-hint" id="matchHint">출석 멤버가 4명 이상이어야 매칭됩니다</div>
+  </div>
+
+  <!-- 대진표 -->
+  <div class="card results-wrap" id="resultsSection">
+    <div class="section-title">🏆 대진표</div>
+    <div class="games-list" id="gamesList"></div>
+    <div class="action-row">
+      <button class="btn-outline" onclick="generateMatches()">🔀 다시 섞기</button>
+      <button class="btn-outline" onclick="clearResults()">✖ 닫기</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCTcxZfr-L-oe25DJyNMj3e8vdEgmbgqog",
+    authDomain: "tokyo-smash.firebaseapp.com",
+    databaseURL: "https://tokyo-smash-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "tokyo-smash",
+    storageBucket: "tokyo-smash.firebasestorage.app",
+    messagingSenderId: "885467955971",
+    appId: "1:885467955971:web:e1ad21d28e0a910a02df36",
+    measurementId: "G-D6V57RK9VK"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const MAX_COURTS = 3;
+  const RATING_WIN = 3, RATING_LOSS = 3;
+  const todayKey = new Date().toISOString().slice(0,10);
+
+  document.getElementById('dateBadge').textContent = new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
+
+  const membersRef = ref(db,'members');
+  const presentRef = ref(db,`present/${todayKey}`);
+  const matchRef   = ref(db,`matches/${todayKey}`);
+
+  onValue(ref(db,'.info/connected'), snap => {
+    const on = snap.val();
+    document.getElementById('connDot').className = 'conn-dot'+(on?' online':'');
+    document.getElementById('connText').textContent = on ? '실시간 연결됨 ✓' : '오프라인';
+  });
+
+  let members = {}, present = {};
+
+  onValue(membersRef, snap => { members = snap.val()||{}; render(); });
+  onValue(presentRef, snap => { present = snap.val()||{}; render(); });
+  onValue(matchRef, snap => {
+    const d = snap.val();
+    if (d && d.games) renderResults(d.games, d.rest, d.results||{});
+    else document.getElementById('resultsSection').classList.remove('visible');
+  });
+
+  function render() {
+    const grid = document.getElementById('attendGrid');
+    const presentEntries = Object.keys(present)
+      .filter(id => members[id])
+      .map(id => ({ id, ...members[id] }));
+
+    if (!presentEntries.length) {
+      grid.innerHTML = `<div class="empty-state">아직 출석한 멤버가 없어요<br><a class="empty-link" href="members.html">👥 멤버 관리에서 출석 체크</a></div>`;
+    } else {
+      grid.innerHTML = presentEntries.map(m => {
+        const r = m.rating ?? 50;
+        const rc = r>=80?'r-top':r>=60?'r-high':r>=35?'r-mid':'r-low';
+        return `<div class="attend-chip">
+          <div class="attend-chip-name">${esc(m.name)}</div>
+          <div class="attend-chip-rating ${rc}">Lv.${r}</div>
+        </div>`;
+      }).join('');
+    }
+
+    const cnt = presentEntries.length;
+    const courts = Math.min(Math.floor(cnt/4), MAX_COURTS);
+    const restCnt = cnt - courts*4;
+    document.getElementById('presentCount').textContent = cnt+'명';
+
+    const btn = document.getElementById('matchBtn');
+    const hint = document.getElementById('matchHint');
+    if (cnt < 4) {
+      btn.disabled = true;
+      hint.textContent = `출석 멤버가 4명 이상이어야 매칭됩니다 (현재 ${cnt}명)`;
+    } else {
+      btn.disabled = false;
+      hint.textContent = `출석 ${cnt}명 · ${courts}코트 · ${restCnt>0?`휴식 ${restCnt}명 (랜덤)`:'전원 참가'}`;
+    }
+  }
+
+  window.generateMatches = async function() {
+    const ids = shuffle(Object.keys(present).filter(id=>members[id]));
+    const courts = Math.min(Math.floor(ids.length/4), MAX_COURTS);
+    const active = ids.slice(0, courts*4);
+    const restIds = ids.slice(courts*4);
+
+    const sorted = [...active].sort((a,b)=>(members[b]?.rating??50)-(members[a]?.rating??50));
+    const courtGroups = Array.from({length:courts},()=>[]);
+    sorted.forEach((id,i)=>{
+      const round=Math.floor(i/courts), pos=i%courts;
+      courtGroups[round%2===0?pos:courts-1-pos].push(id);
+    });
+
+    const games = courtGroups.map((group,ci)=>{
+      const split = bestSplit(group);
+      return {
+        court: ci+1,
+        teamA: split.a.map(id=>({name:members[id]?.name,rating:members[id]?.rating??50,id})),
+        teamB: split.b.map(id=>({name:members[id]?.name,rating:members[id]?.rating??50,id})),
+        gameId: `c${ci+1}_${Date.now()}`
+      };
+    });
+
+    const rest = restIds.map(id=>members[id]?.name).filter(Boolean);
+    await set(matchRef,{games,rest:rest.length?rest:null,results:{},createdAt:Date.now()});
+    toast('밸런스 대진 생성! 모두에게 실시간 공유됨 🏸');
+  };
+
+  function bestSplit(ids) {
+    const pairs=[[0,1],[0,2],[0,3]]; let best=null;
+    for(const [i,j] of pairs){
+      const a=[ids[i],ids[j]], b=ids.filter((_,k)=>k!==i&&k!==j);
+      const rA=a.reduce((s,id)=>s+(members[id]?.rating??50),0);
+      const rB=b.reduce((s,id)=>s+(members[id]?.rating??50),0);
+      const diff=Math.abs(rA-rB);
+      if(!best||diff<best.diff) best={a,b,diff};
+    }
+    return best;
+  }
+
+  function renderResults(games, rest, results) {
+    const section = document.getElementById('resultsSection');
+    const list = document.getElementById('gamesList');
+    let html = games.map((g,i)=>{
+      const rA=g.teamA.reduce((s,p)=>s+p.rating,0);
+      const rB=g.teamB.reduce((s,p)=>s+p.rating,0);
+      const pctA=Math.round(rA/(rA+rB)*100)||50;
+      const done=results[g.gameId];
+      return `<div class="game-card" style="animation-delay:${i*0.08}s">
+        <div class="court-label">🏟 COURT ${g.court}</div>
+        <div class="game-teams">
+          <div class="team-box">
+            <div class="team-label">팀 A</div>
+            <div class="team-players">${g.teamA.map(p=>esc(p.name)).join('<br>')}</div>
+            <div class="team-rating">합산 ${rA}</div>
+          </div>
+          <div class="vs-badge">VS</div>
+          <div class="team-box">
+            <div class="team-label">팀 B</div>
+            <div class="team-players">${g.teamB.map(p=>esc(p.name)).join('<br>')}</div>
+            <div class="team-rating">합산 ${rB}</div>
+          </div>
+        </div>
+        <div class="balance-bar-wrap">
+          <div class="balance-label"><span>팀A ${pctA}%</span><span>팀B ${100-pctA}%</span></div>
+          <div class="balance-bar-bg"><div class="balance-bar-fill" style="width:${pctA}%"></div></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">결과:</span>
+          ${done
+            ?`<span class="result-done">✓ 팀 ${done} 승리 · 레이팅 반영됨</span>`
+            :`<button class="result-btn" onclick="submitResult('${g.gameId}','A',${i})">팀 A 승</button>
+              <button class="result-btn" onclick="submitResult('${g.gameId}','B',${i})">팀 B 승</button>`}
+        </div>
+      </div>`;
+    }).join('');
+    if(rest&&rest.length){
+      html+=`<div class="rest-card" style="animation-delay:${games.length*0.08}s">
+        <div class="rest-title">☕ 휴식 (${rest.length}명)</div>
+        <div class="rest-names">${rest.map(n=>`<span class="rest-chip">${esc(n)}</span>`).join('')}</div>
+      </div>`;
+    }
+    list.innerHTML=html;
+    section.classList.add('visible');
+    section.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  window.submitResult = async function(gameId, winner, idx) {
+    const snap = await new Promise(res=>onValue(matchRef,res,{onlyOnce:true}));
+    const data = snap.val(); if(!data||!data.games) return;
+    const g = data.games[idx]; if(!g) return;
+    const nameToId={};
+    for(const [id,m] of Object.entries(members)) nameToId[m.name]=id;
+    const winners=winner==='A'?g.teamA:g.teamB, losers=winner==='A'?g.teamB:g.teamA;
+    const updates={};
+    for(const p of winners){const id=nameToId[p.name];if(id)updates[`members/${id}/rating`]=Math.min(100,(members[id]?.rating??50)+RATING_WIN);}
+    for(const p of losers){const id=nameToId[p.name];if(id)updates[`members/${id}/rating`]=Math.max(1,(members[id]?.rating??50)-RATING_LOSS);}
+    updates[`matches/${todayKey}/results/${gameId}`]=winner;
+    await update(ref(db),updates);
+    toast(`팀 ${winner} 승리! 레이팅 반영 🏆`);
+  };
+
+  window.clearResults = async function(){await remove(matchRef);};
+
+  function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+  function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  let tt;
+  function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2800);}
+</script>
+</body>
+</html>
