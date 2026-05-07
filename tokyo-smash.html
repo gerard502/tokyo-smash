@@ -12,11 +12,8 @@
     --green-dark: #009624;
     --green-light: #b9f6ca;
     --court: #1a472a;
-    --court-light: #2d6a4f;
     --white: #f5fff7;
     --gray: #b0bec5;
-    --gray-light: #eceff1;
-    --shadow: rgba(0,0,0,0.18);
     --accent: #ffe600;
   }
 
@@ -30,7 +27,6 @@
     overflow-x: hidden;
   }
 
-  /* Court line background */
   body::before {
     content: '';
     position: fixed;
@@ -38,18 +34,6 @@
     background:
       repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(255,255,255,0.04) 59px, rgba(255,255,255,0.04) 61px),
       repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(255,255,255,0.04) 59px, rgba(255,255,255,0.04) 61px);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* Net line */
-  body::after {
-    content: '';
-    position: fixed;
-    top: 0; bottom: 0;
-    left: 50%;
-    width: 2px;
-    background: rgba(255,255,255,0.06);
     pointer-events: none;
     z-index: 0;
   }
@@ -62,11 +46,9 @@
     padding: 0 16px 80px;
   }
 
-  /* ── HEADER ── */
   header {
     text-align: center;
     padding: 40px 0 24px;
-    position: relative;
   }
 
   .logo-shuttle {
@@ -112,7 +94,24 @@
     letter-spacing: 1px;
   }
 
-  /* ── SECTION CARD ── */
+  .conn-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    font-size: 0.75rem;
+    color: var(--gray);
+  }
+
+  .conn-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--gray);
+    transition: background 0.3s;
+  }
+
+  .conn-dot.online { background: var(--green); box-shadow: 0 0 6px var(--green); }
+
   .card {
     background: rgba(255,255,255,0.05);
     backdrop-filter: blur(4px);
@@ -133,7 +132,7 @@
     gap: 8px;
   }
 
-  .section-title .count-badge {
+  .count-badge {
     font-family: 'Noto Sans KR', sans-serif;
     font-size: 0.7rem;
     font-weight: 700;
@@ -145,10 +144,10 @@
     line-height: 1.4;
   }
 
-  /* ── ADD MEMBER ── */
   .add-row {
     display: flex;
     gap: 8px;
+    margin-bottom: 14px;
   }
 
   .add-row input {
@@ -184,18 +183,6 @@
   .btn:active { transform: scale(0.96); }
   .btn:hover { background: var(--green-dark); }
 
-  .btn-danger {
-    background: transparent;
-    color: #ef5350;
-    border: 1px solid #ef5350;
-    font-size: 0.75rem;
-    padding: 4px 10px;
-    border-radius: 8px;
-  }
-
-  .btn-danger:hover { background: rgba(239,83,80,0.12); }
-
-  /* ── MEMBER GRID ── */
   .member-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -206,7 +193,6 @@
   }
 
   .member-grid::-webkit-scrollbar { width: 4px; }
-  .member-grid::-webkit-scrollbar-track { background: transparent; }
   .member-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
 
   .member-chip {
@@ -274,7 +260,6 @@
 
   .chip-del:hover { color: #ef5350; }
 
-  /* ── ATTENDANCE BAR ── */
   .attend-info {
     margin-top: 12px;
     display: flex;
@@ -300,7 +285,6 @@
     transition: width 0.4s ease;
   }
 
-  /* ── MATCH BUTTON ── */
   .match-section { text-align: center; }
 
   .btn-match {
@@ -314,10 +298,7 @@
     transition: box-shadow 0.2s, transform 0.1s;
   }
 
-  .btn-match:hover {
-    box-shadow: 0 6px 28px rgba(0,200,83,0.5);
-    background: linear-gradient(135deg, #00e676, var(--green));
-  }
+  .btn-match:hover { box-shadow: 0 6px 28px rgba(0,200,83,0.5); }
 
   .btn-match:disabled {
     background: rgba(255,255,255,0.08);
@@ -332,7 +313,6 @@
     color: var(--gray);
   }
 
-  /* ── RESULTS ── */
   .results-wrap { display: none; }
   .results-wrap.visible { display: block; }
 
@@ -360,7 +340,6 @@
     color: rgba(0,200,83,0.4);
     min-width: 32px;
     text-align: center;
-    letter-spacing: 1px;
   }
 
   .game-teams { flex: 1; display: flex; align-items: center; gap: 8px; }
@@ -391,7 +370,6 @@
   .vs-badge {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 1.1rem;
-    letter-spacing: 1px;
     color: var(--accent);
     text-shadow: 0 0 10px rgba(255,230,0,0.5);
   }
@@ -415,13 +393,8 @@
     opacity: 0.8;
   }
 
-  .standby-name {
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: var(--accent);
-  }
+  .standby-name { font-size: 0.9rem; font-weight: 700; color: var(--accent); }
 
-  /* ── RESET / SHUFFLE ── */
   .action-row {
     display: flex;
     gap: 8px;
@@ -444,7 +417,6 @@
 
   .btn-outline:hover { border-color: var(--green); color: var(--green); }
 
-  /* ── EMPTY STATE ── */
   .empty-state {
     text-align: center;
     padding: 20px;
@@ -452,7 +424,6 @@
     font-size: 0.85rem;
   }
 
-  /* ── TOAST ── */
   .toast {
     position: fixed;
     bottom: 24px;
@@ -476,31 +447,29 @@
 <body>
 
 <div class="container">
-
-  <!-- HEADER -->
   <header>
     <span class="logo-shuttle">🏸</span>
     <div class="logo-title">TOKYO <span>SMASH</span></div>
     <div class="logo-sub">배드민턴 동아리 · Badminton Club</div>
     <div class="date-badge" id="dateBadge"></div>
+    <div class="conn-badge">
+      <div class="conn-dot" id="connDot"></div>
+      <span id="connText">연결 중...</span>
+    </div>
   </header>
 
-  <!-- MEMBER MANAGEMENT -->
   <div class="card">
     <div class="section-title">
       👥 멤버 목록
       <span class="count-badge" id="memberCount">0명</span>
     </div>
-
-    <div class="add-row" style="margin-bottom:14px;">
+    <div class="add-row">
       <input type="text" id="memberInput" placeholder="새 멤버 이름 입력..." maxlength="12">
       <button class="btn" onclick="addMember()">추가</button>
     </div>
-
     <div class="member-grid" id="memberGrid">
-      <div class="empty-state">멤버를 추가해주세요</div>
+      <div class="empty-state">연결 중...</div>
     </div>
-
     <div class="attend-info">
       <span class="attend-text">출석 <strong id="presentCount">0</strong>명</span>
       <div class="attend-bar-wrap">
@@ -509,7 +478,6 @@
     </div>
   </div>
 
-  <!-- MATCH BUTTON -->
   <div class="card match-section">
     <div class="section-title">🎯 게임 매칭</div>
     <button class="btn btn-match" id="matchBtn" onclick="generateMatches()" disabled>
@@ -518,7 +486,6 @@
     <div class="match-hint" id="matchHint">출석 멤버가 4명 이상이어야 매칭됩니다</div>
   </div>
 
-  <!-- RESULTS -->
   <div class="card results-wrap" id="resultsSection">
     <div class="section-title">🏆 대진표</div>
     <div class="games-list" id="gamesList"></div>
@@ -527,198 +494,199 @@
       <button class="btn-outline" onclick="clearResults()">✖ 닫기</button>
     </div>
   </div>
-
 </div>
 
 <div class="toast" id="toast"></div>
 
-<script>
-// ── DATA ──
-const DEFAULT_MEMBERS = ['김민준','이서연','박지훈','최수아','정도윤','한예린','윤태양','송채원'];
-let members = [];
-let present = new Set();
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-// ── INIT ──
-function init() {
-  const saved = localStorage.getItem('ts_members');
-  members = saved ? JSON.parse(saved) : [...DEFAULT_MEMBERS];
+  const firebaseConfig = {
+    apiKey: "AIzaSyCTcxZfr-L-oe25DJyNMj3e8vdEgmbgqog",
+    authDomain: "tokyo-smash.firebaseapp.com",
+    databaseURL: "https://tokyo-smash-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "tokyo-smash",
+    storageBucket: "tokyo-smash.firebasestorage.app",
+    messagingSenderId: "885467955971",
+    appId: "1:885467955971:web:e1ad21d28e0a910a02df36",
+    measurementId: "G-D6V57RK9VK"
+  };
 
-  const savedPresent = localStorage.getItem('ts_present_' + todayKey());
-  if (savedPresent) present = new Set(JSON.parse(savedPresent));
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
 
+  const todayKey = new Date().toISOString().slice(0, 10);
   document.getElementById('dateBadge').textContent = new Date().toLocaleDateString('ko-KR', {
-    year:'numeric', month:'long', day:'numeric', weekday:'short'
+    year: 'numeric', month: 'long', day: 'numeric', weekday: 'short'
   });
 
-  document.getElementById('memberInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') addMember();
+  const membersRef = ref(db, 'members');
+  const presentRef = ref(db, `present/${todayKey}`);
+  const matchRef   = ref(db, `matches/${todayKey}`);
+
+  // 연결 상태
+  onValue(ref(db, '.info/connected'), snap => {
+    const online = snap.val();
+    document.getElementById('connDot').className = 'conn-dot' + (online ? ' online' : '');
+    document.getElementById('connText').textContent = online ? '실시간 연결됨 ✓' : '오프라인';
   });
 
-  render();
-}
+  let members = {};
+  let present = {};
 
-function todayKey() {
-  return new Date().toISOString().slice(0,10);
-}
+  // 멤버 실시간
+  onValue(membersRef, snap => {
+    members = snap.val() || {};
+    render();
+  });
 
-function save() {
-  localStorage.setItem('ts_members', JSON.stringify(members));
-  localStorage.setItem('ts_present_' + todayKey(), JSON.stringify([...present]));
-}
+  // 출석 실시간
+  onValue(presentRef, snap => {
+    present = snap.val() || {};
+    render();
+  });
 
-// ── RENDER ──
-function render() {
-  const grid = document.getElementById('memberGrid');
+  // 대진표 실시간
+  onValue(matchRef, snap => {
+    const data = snap.val();
+    if (data && data.games) {
+      renderResults(data.games, data.standby);
+    } else {
+      document.getElementById('resultsSection').classList.remove('visible');
+    }
+  });
 
-  if (members.length === 0) {
-    grid.innerHTML = '<div class="empty-state">멤버를 추가해주세요</div>';
-  } else {
-    grid.innerHTML = members.map((name, i) => `
-      <div class="member-chip ${present.has(name) ? 'present' : ''}" onclick="togglePresent('${escHtml(name)}')">
-        <div class="chip-left">
-          <div class="chip-check">${present.has(name) ? '✓' : ''}</div>
-          <span class="chip-name">${escHtml(name)}</span>
+  function render() {
+    const grid = document.getElementById('memberGrid');
+    const memberList = Object.entries(members);
+
+    if (memberList.length === 0) {
+      grid.innerHTML = '<div class="empty-state">멤버를 추가해주세요</div>';
+    } else {
+      grid.innerHTML = memberList.map(([id, name]) => `
+        <div class="member-chip ${present[id] ? 'present' : ''}" onclick="togglePresent('${id}')">
+          <div class="chip-left">
+            <div class="chip-check">${present[id] ? '✓' : ''}</div>
+            <span class="chip-name">${esc(name)}</span>
+          </div>
+          <button class="chip-del" onclick="event.stopPropagation(); deleteMember('${id}')">✕</button>
         </div>
-        <button class="chip-del" onclick="event.stopPropagation(); deleteMember(${i})" title="삭제">✕</button>
+      `).join('');
+    }
+
+    const total = memberList.length;
+    const cnt = Object.keys(present).length;
+    document.getElementById('memberCount').textContent = total + '명';
+    document.getElementById('presentCount').textContent = cnt;
+    document.getElementById('attendBar').style.width = total > 0 ? (cnt / total * 100) + '%' : '0%';
+
+    const btn = document.getElementById('matchBtn');
+    const hint = document.getElementById('matchHint');
+    if (cnt < 4) {
+      btn.disabled = true;
+      hint.textContent = `출석 멤버가 4명 이상이어야 매칭됩니다 (현재 ${cnt}명)`;
+    } else {
+      btn.disabled = false;
+      hint.textContent = `출석 ${cnt}명 · 복식 ${Math.floor(cnt / 4)}코트 구성 가능`;
+    }
+  }
+
+  window.addMember = async function() {
+    const input = document.getElementById('memberInput');
+    const name = input.value.trim();
+    if (!name) return;
+    if (Object.values(members).includes(name)) { toast('이미 있는 멤버예요!'); return; }
+    await set(ref(db, `members/member_${Date.now()}`), name);
+    input.value = '';
+    toast(`${name} 추가됨 ✓`);
+  };
+
+  window.deleteMember = async function(id) {
+    await remove(ref(db, `members/${id}`));
+    await remove(ref(db, `present/${todayKey}/${id}`));
+    toast('멤버 삭제됨');
+  };
+
+  window.togglePresent = async function(id) {
+    if (present[id]) {
+      await remove(ref(db, `present/${todayKey}/${id}`));
+    } else {
+      await set(ref(db, `present/${todayKey}/${id}`), true);
+    }
+  };
+
+  window.generateMatches = async function() {
+    const ids = shuffle(Object.keys(present));
+    const players = ids.map(id => members[id]).filter(Boolean);
+    let active = [...players];
+    let standby = null;
+    if (active.length % 4 !== 0) standby = active.pop();
+    const games = [];
+    for (let i = 0; i < active.length; i += 4) {
+      games.push({ teamA: [active[i], active[i+1]], teamB: [active[i+2], active[i+3]] });
+    }
+    await set(matchRef, { games, standby: standby || null, createdAt: Date.now() });
+    toast('대진표 생성! 모두에게 실시간 공유됨 🏸');
+  };
+
+  function renderResults(games, standby) {
+    const section = document.getElementById('resultsSection');
+    const list = document.getElementById('gamesList');
+    let html = games.map((g, i) => `
+      <div class="game-card" style="animation-delay:${i*0.07}s">
+        <div class="game-num">${i+1}</div>
+        <div class="game-teams">
+          <div class="team-box">
+            <div class="team-label">팀 A</div>
+            <div class="team-players">${g.teamA.map(esc).join('<br>')}</div>
+          </div>
+          <div class="vs-badge">VS</div>
+          <div class="team-box">
+            <div class="team-label">팀 B</div>
+            <div class="team-players">${g.teamB.map(esc).join('<br>')}</div>
+          </div>
+        </div>
       </div>
     `).join('');
+    if (standby) {
+      html += `<div class="standby-card"><span style="font-size:1.2rem">⏳</span><div><div class="standby-label">대기</div><div class="standby-name">${esc(standby)}</div></div></div>`;
+    }
+    list.innerHTML = html;
+    section.classList.add('visible');
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  const total = members.length;
-  const cnt = present.size;
-  document.getElementById('memberCount').textContent = total + '명';
-  document.getElementById('presentCount').textContent = cnt;
-  document.getElementById('attendBar').style.width = total > 0 ? (cnt/total*100) + '%' : '0%';
+  window.clearResults = async function() {
+    await remove(matchRef);
+  };
 
-  const matchBtn = document.getElementById('matchBtn');
-  const hint = document.getElementById('matchHint');
-  if (cnt < 4) {
-    matchBtn.disabled = true;
-    hint.textContent = `출석 멤버가 4명 이상이어야 매칭됩니다 (현재 ${cnt}명)`;
-  } else {
-    matchBtn.disabled = false;
-    hint.textContent = `출석 ${cnt}명으로 복식 게임 ${Math.floor(cnt/4)}코트 구성 가능`;
-  }
-}
-
-// ── MEMBERS ──
-function addMember() {
-  const input = document.getElementById('memberInput');
-  const name = input.value.trim();
-  if (!name) return;
-  if (members.includes(name)) { showToast('이미 있는 멤버예요!'); return; }
-  members.push(name);
-  save();
-  render();
-  input.value = '';
-  showToast(`${name} 추가됨 ✓`);
-}
-
-function deleteMember(i) {
-  const name = members[i];
-  present.delete(name);
-  members.splice(i, 1);
-  save();
-  render();
-  clearResults();
-}
-
-function togglePresent(name) {
-  if (present.has(name)) present.delete(name);
-  else present.add(name);
-  save();
-  render();
-  clearResults();
-}
-
-// ── MATCHING ──
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-function generateMatches() {
-  const players = shuffle([...present]);
-  const games = [];
-  let standby = null;
-
-  // If not divisible by 4, one sits out
-  let active = players;
-  if (players.length % 4 !== 0) {
-    standby = active.pop();
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length-1; i > 0; i--) {
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
   }
 
-  for (let i = 0; i < active.length; i += 4) {
-    games.push({
-      teamA: [active[i], active[i+1]],
-      teamB: [active[i+2], active[i+3]]
-    });
+  function esc(str) {
+    if (!str) return '';
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
-  renderResults(games, standby);
-}
-
-function renderResults(games, standby) {
-  const section = document.getElementById('resultsSection');
-  const list = document.getElementById('gamesList');
-
-  let html = games.map((g, i) => `
-    <div class="game-card" style="animation-delay:${i*0.07}s">
-      <div class="game-num">${i+1}</div>
-      <div class="game-teams">
-        <div class="team-box">
-          <div class="team-label">팀 A</div>
-          <div class="team-players">${g.teamA.map(escHtml).join('<br>')}</div>
-        </div>
-        <div class="vs-badge">VS</div>
-        <div class="team-box">
-          <div class="team-label">팀 B</div>
-          <div class="team-players">${g.teamB.map(escHtml).join('<br>')}</div>
-        </div>
-      </div>
-    </div>
-  `).join('');
-
-  if (standby) {
-    html += `
-      <div class="standby-card" style="animation-delay:${games.length*0.07}s">
-        <span style="font-size:1.2rem">⏳</span>
-        <div>
-          <div class="standby-label">대기</div>
-          <div class="standby-name">${escHtml(standby)}</div>
-        </div>
-      </div>
-    `;
+  let toastTimer;
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
   }
 
-  list.innerHTML = html;
-  section.classList.add('visible');
-  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function clearResults() {
-  document.getElementById('resultsSection').classList.remove('visible');
-}
-
-// ── UTILS ──
-function escHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
-}
-
-init();
+  document.getElementById('memberInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') window.addMember();
+  });
 </script>
 </body>
 </html>
