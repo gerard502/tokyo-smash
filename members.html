@@ -200,27 +200,27 @@
     </div>
 
     <!-- 월회비 납부자 (운영자만) -->
-    <div class="monthly-fee-box" id="monthlyFeeBox">
-      <div class="monthly-fee-title">💜 이번 달 월회비 납부자</div>
-      <div class="monthly-fee-list" id="monthlyFeeList"></div>
-      <div class="monthly-add-row">
-        <select class="monthly-select" id="monthlyFeeSelect"><option value="">멤버 선택...</option></select>
-        <button class="monthly-add-btn" onclick="addMonthlyFee()">+ 납부 추가</button>
+    <div class="monthly-fee-box" id="monthlyFeeBox" style="display:none;margin-bottom:14px;padding:12px 16px;background:rgba(206,147,216,0.08);border:1px solid rgba(206,147,216,0.25);border-radius:12px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:0.8rem;letter-spacing:2px;color:#ce93d8;margin-bottom:8px">💜 이번 달 월회비 납부자</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px" id="monthlyFeeList"></div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <select id="monthlyFeeSelect" style="flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#f5fff7;font-size:0.82rem;padding:6px 10px;outline:none;cursor:pointer"><option value="">멤버 선택...</option></select>
+        <button onclick="addMonthlyFee()" style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:1px;padding:6px 14px;border-radius:8px;border:1px solid rgba(206,147,216,0.3);background:transparent;color:#ce93d8;cursor:pointer">+ 납부 추가</button>
       </div>
     </div>
 
     <!-- 당일 회비 합계 (운영자만) -->
-    <div class="fee-total-box" id="feeTotalBox">
-      <div class="fee-total-title">💰 당일 회비 합계</div>
-      <div class="fee-total-rows">
-        <div class="fee-total-row"><span>정회원 (<span id="ftMemberCnt">0</span>명 × 700엔)</span><span id="ftMemberAmt">0엔</span></div>
-        <div class="fee-total-row"><span>게스트 (<span id="ftGuestCnt">0</span>명 × 1000엔)</span><span id="ftGuestAmt">0엔</span></div>
-        <div class="fee-total-row" style="color:var(--purple)"><span>월회비 납부자 (<span id="ftMonthlyCnt">0</span>명, 제외)</span><span id="ftMonthlyAmt" style="color:var(--purple)">-0엔</span></div>
+    <div class="fee-total-box" id="feeTotalBox" style="display:none;margin-bottom:14px;padding:14px 16px;background:rgba(255,152,0,0.1);border:1px solid rgba(255,152,0,0.3);border-radius:12px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:0.8rem;letter-spacing:2px;color:#ff9800;margin-bottom:10px">💰 당일 회비 합계</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;justify-content:space-between;font-size:0.82rem;color:#b0bec5"><span>정회원 (<span id="ftMemberCnt">0</span>명 × 700엔)</span><span id="ftMemberAmt">0엔</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:0.82rem;color:#b0bec5"><span>게스트 (<span id="ftGuestCnt">0</span>명 × 1000엔)</span><span id="ftGuestAmt">0엔</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:0.82rem;color:#ce93d8"><span>월회비 납부자 (<span id="ftMonthlyCnt">0</span>명, 제외)</span><span id="ftMonthlyAmt">-0엔</span></div>
       </div>
-      <div class="fee-total-divider"></div>
-      <div class="fee-total-sum">
-        <span class="fee-total-sum-label">합계</span>
-        <span class="fee-total-sum-amount" id="feeTotalAmount">0엔</span>
+      <div style="height:1px;background:rgba(255,255,255,0.08);margin:8px 0"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:2px;color:#ff9800">합계</span>
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:1px;color:#ffe600" id="feeTotalAmount">0엔</span>
       </div>
     </div>
 
