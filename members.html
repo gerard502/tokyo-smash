@@ -156,6 +156,19 @@
       <span class="fee-summary-text">회비 납부 <strong id="feeCount">0</strong> / <strong id="totalCount2">0</strong>명</span>
       <div class="fee-bar-wrap"><div class="fee-bar" id="feeBar" style="width:0%"></div></div>
     </div>
+    <!-- 회비 합계 (운영자만) -->
+    <div id="feeTotalBox" style="display:none;margin-bottom:14px;padding:12px 16px;background:rgba(255,152,0,0.1);border:1px solid rgba(255,152,0,0.3);border-radius:10px;">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:0.82rem;color:var(--gray);">회비</span>
+        <input type="number" id="feeAmount" value="1000" min="0" step="500"
+          style="width:90px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:var(--white);font-family:'Bebas Neue',sans-serif;font-size:1rem;padding:5px 8px;outline:none;text-align:center;"
+          oninput="updateFeeTotal()">
+        <span style="font-size:0.82rem;color:var(--gray);">원 ×</span>
+        <span id="feePaidCount" style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--orange);">0</span>
+        <span style="font-size:0.82rem;color:var(--gray);">명 =</span>
+        <span id="feeTotalAmount" style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--accent);letter-spacing:1px;">0원</span>
+      </div>
+    </div>
     <div class="filter-tabs">
       <button class="filter-tab active" onclick="setFilter('all',this)">전체</button>
       <button class="filter-tab" onclick="setFilter('present',this)">출석</button>
@@ -217,6 +230,7 @@
     const addCard=document.getElementById('addCard'),bulkRow=document.getElementById('bulkRow'),roNotice=document.getElementById('readonlyNotice');
     if(isAdmin){dot.className='admin-dot on';txt.textContent='운영자 모드 ✓';btn.textContent='🔓 로그아웃';addCard.style.display='';bulkRow.style.display='';roNotice.style.display='none';}
     else{dot.className='admin-dot';txt.textContent='일반 모드';btn.textContent='🔐 운영자 로그인';addCard.style.display='none';bulkRow.style.display='none';roNotice.style.display='';}
+    document.getElementById('feeTotalBox').style.display = isAdmin ? '' : 'none';
     render();
   }
 
@@ -280,7 +294,15 @@
         ${isAdmin?`<button class="chip-del" onclick="deleteMember('${id}')">✕</button>`:''}
       </div>`;
     }).join('');
+    updateFeeTotal();
   }
+
+  window.updateFeeTotal = function() {
+    const amount = parseInt(document.getElementById('feeAmount')?.value) || 0;
+    const cnt = Object.keys(fee).length;
+    document.getElementById('feePaidCount').textContent = cnt;
+    document.getElementById('feeTotalAmount').textContent = (amount * cnt).toLocaleString() + '엔';
+  };
 
   window.setFilter=function(f,el){currentFilter=f;document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');render();};
   window.addMember=async function(){
