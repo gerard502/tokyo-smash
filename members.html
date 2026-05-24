@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tokyo Smash · 멤버 관리</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;600;700&display=swap');
+  :root{--green:#00c853;--green-dark:#009624;--green-light:#b9f6ca;--court:#1a472a;--white:#f5fff7;--gray:#b0bec5;--accent:#ffe600;--orange:#ff9800;--red:#ef5350;--purple:#ce93d8;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Noto Sans KR',sans-serif;background:var(--court);color:var(--white);min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(255,255,255,0.04) 59px,rgba(255,255,255,0.04) 61px),repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(255,255,255,0.04) 59px,rgba(255,255,255,0.04) 61px);pointer-events:none;z-index:0}
+  .container{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 16px 100px}
+  .nav{display:flex;gap:6px;justify-content:center;padding:16px 0 0;flex-wrap:wrap}
+  .nav-btn{font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:2px;padding:7px 16px;border-radius:20px;border:1px solid rgba(255,255,255,0.2);background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+  .nav-btn.active{background:var(--green);border-color:var(--green);color:#000}
+  .nav-btn:hover:not(.active){border-color:var(--green);color:var(--green)}
+  header{text-align:center;padding:24px 0 20px}
+  .logo-shuttle{font-size:2rem;display:block;animation:spin-float 3s ease-in-out infinite}
+  @keyframes spin-float{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-8px) rotate(8deg)}}
+  .page-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,6vw,2.6rem);letter-spacing:4px;color:var(--white);text-shadow:0 0 20px rgba(0,200,83,0.5),2px 2px 0 var(--green-dark)}
+  .page-title span{color:var(--accent)}
+  .date-badge{display:inline-block;margin-top:10px;background:rgba(0,200,83,0.15);border:1px solid rgba(0,200,83,0.3);border-radius:20px;padding:4px 16px;font-size:0.8rem;color:var(--green-light);letter-spacing:1px}
+  .conn-badge{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:0.75rem;color:var(--white);background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:20px;padding:4px 12px}
+  .conn-dot{width:8px;height:8px;border-radius:50%;background:var(--gray);transition:background 0.3s}
+  .conn-dot.online{background:#00ff88;box-shadow:0 0 6px #00ff88}
+  .admin-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.07);border-radius:10px;margin-bottom:14px}
+  .admin-status{display:flex;align-items:center;gap:7px;font-size:0.78rem;color:var(--gray)}
+  .admin-dot{width:7px;height:7px;border-radius:50%;background:var(--gray);flex-shrink:0}
+  .admin-dot.on{background:var(--accent);box-shadow:0 0 5px var(--accent)}
+  .admin-btn-sm{font-family:'Bebas Neue',sans-serif;font-size:0.78rem;letter-spacing:1px;padding:4px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:rgba(255,255,255,0.4);cursor:pointer;transition:all 0.2s}
+  .admin-btn-sm:hover{border-color:var(--accent);color:var(--accent)}
+  .card{background:rgba(255,255,255,0.05);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px;margin-bottom:20px}
+  .section-title{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:3px;color:var(--green);margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .count-badge{font-family:'Noto Sans KR',sans-serif;font-size:0.7rem;font-weight:700;background:var(--green);color:#000;border-radius:10px;padding:2px 8px;letter-spacing:0;line-height:1.4}
+  .present-badge{background:var(--accent);color:#000}
+  .fee-badge{background:var(--orange);color:#000}
+  .add-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+  .add-input{flex:1;min-width:80px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:var(--white);font-family:'Noto Sans KR',sans-serif;font-size:0.9rem;padding:10px 14px;outline:none;transition:border-color 0.2s}
+  .add-input:focus{border-color:var(--green)}
+  .add-input::placeholder{color:rgba(255,255,255,0.3)}
+  .add-input-num{width:80px;flex:none;text-align:center}
+  .add-input-num::-webkit-inner-spin-button{opacity:0.4}
+  .type-select-add{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:var(--white);font-family:'Noto Sans KR',sans-serif;font-size:0.85rem;padding:10px;outline:none;cursor:pointer;flex-shrink:0}
+  .type-select-add option{background:#1a472a}
+  .btn{background:var(--green);color:#000;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1px;border:none;border-radius:10px;padding:10px 18px;cursor:pointer;transition:transform 0.1s,background 0.2s;white-space:nowrap}
+  .btn:active{transform:scale(0.96)}.btn:hover{background:var(--green-dark)}
+  .attend-summary{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:10px 14px;background:rgba(0,200,83,0.08);border:1px solid rgba(0,200,83,0.2);border-radius:10px}
+  .attend-summary-text{font-size:0.82rem;color:var(--gray);flex-shrink:0}
+  .attend-summary-text strong{color:var(--green);font-size:1rem}
+  .attend-bar-wrap{flex:1;height:6px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden}
+  .attend-bar{height:100%;background:linear-gradient(90deg,var(--green),var(--accent));border-radius:3px;transition:width 0.4s ease}
+  .fee-summary{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:10px 14px;background:rgba(255,152,0,0.08);border:1px solid rgba(255,152,0,0.2);border-radius:10px}
+  .fee-summary-text{font-size:0.82rem;color:var(--gray);flex-shrink:0}
+  .fee-summary-text strong{color:var(--orange);font-size:1rem}
+  .fee-bar-wrap{flex:1;height:6px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden}
+  .fee-bar{height:100%;background:linear-gradient(90deg,var(--orange),var(--accent));border-radius:3px;transition:width 0.4s ease}
+
+  /* 월회비 박스 */
+  .monthly-box{display:none;margin-bottom:12px;padding:12px 16px;background:rgba(206,147,216,0.08);border:1px solid rgba(206,147,216,0.25);border-radius:12px}
+  .monthly-box-title{font-family:'Bebas Neue',sans-serif;font-size:0.8rem;letter-spacing:2px;color:var(--purple);margin-bottom:8px}
+  .monthly-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;min-height:24px}
+  .monthly-chip{background:rgba(206,147,216,0.15);border:1px solid rgba(206,147,216,0.3);border-radius:8px;padding:4px 10px;font-size:0.82rem;font-weight:700;color:var(--purple);display:flex;align-items:center;gap:5px}
+  .monthly-chip button{background:none;border:none;color:rgba(206,147,216,0.5);cursor:pointer;font-size:0.8rem;padding:0;line-height:1}
+  .monthly-chip button:hover{color:var(--red)}
+  .monthly-add{display:flex;gap:6px}
+  .monthly-select{flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:var(--white);font-family:'Noto Sans KR',sans-serif;font-size:0.82rem;padding:6px 10px;outline:none;cursor:pointer}
+  .monthly-select option{background:#1a472a}
+  .monthly-add-btn{font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:1px;padding:6px 14px;border-radius:8px;border:1px solid rgba(206,147,216,0.35);background:transparent;color:var(--purple);cursor:pointer;white-space:nowrap;transition:all 0.2s}
+  .monthly-add-btn:hover{background:rgba(206,147,216,0.1)}
+
+  .filter-tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+  .filter-tab{font-family:'Noto Sans KR',sans-serif;font-size:0.8rem;font-weight:600;padding:5px 14px;border-radius:20px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:rgba(255,255,255,0.4);cursor:pointer;transition:all 0.2s}
+  .filter-tab.active{background:var(--green);border-color:var(--green);color:#000}
+  .member-list{display:flex;flex-direction:column;gap:8px;max-height:560px;overflow-y:auto;padding-right:4px}
+  .member-list::-webkit-scrollbar{width:4px}
+  .member-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:4px}
+  .member-row{display:flex;align-items:center;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:8px 12px;gap:8px;transition:all 0.2s}
+  .member-row.present{background:rgba(0,200,83,0.12);border-color:rgba(0,200,83,0.4)}
+  .member-check-btn{width:26px;height:26px;border-radius:50%;border:2px solid rgba(255,255,255,0.25);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:transparent;flex-shrink:0;transition:all 0.2s}
+  .member-row.present .member-check-btn{background:var(--green);border-color:var(--green);color:#000}
+  .member-info{flex:1;min-width:0}
+  .member-name{font-size:0.9rem;font-weight:700;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .member-row.present .member-name{color:var(--green-light)}
+  .member-tags{display:flex;gap:4px;margin-top:3px;flex-wrap:wrap}
+  .tag{font-size:0.65rem;font-weight:700;padding:1px 6px;border-radius:5px;line-height:1.5}
+  .tag-present{background:rgba(0,200,83,0.2);color:var(--green);border:1px solid rgba(0,200,83,0.3)}
+  .tag-fee{background:rgba(255,152,0,0.2);color:var(--orange);border:1px solid rgba(255,152,0,0.3)}
+  .tag-monthly{background:rgba(206,147,216,0.2);color:var(--purple);border:1px solid rgba(206,147,216,0.3)}
+  .tag-guest{background:rgba(255,255,255,0.1);color:var(--gray);border:1px solid rgba(255,255,255,0.15)}
+  .tag-absent{color:rgba(255,255,255,0.25);font-size:0.62rem}
+  .rating-ctrl{display:flex;align-items:center;gap:4px;flex-shrink:0}
+  .rating-btn{width:24px;height:24px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:var(--white);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;transition:all 0.15s}
+  .rating-btn:hover{background:rgba(255,255,255,0.2)}
+  .rating-num{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;min-width:28px;text-align:center;letter-spacing:1px}
+  .r-low{color:#90a4ae}.r-mid{color:var(--accent)}.r-high{color:#ff7043}.r-top{color:#ce93d8}
+  .fee-btn{width:28px;height:28px;border-radius:8px;border:1px solid rgba(255,152,0,0.3);background:transparent;color:rgba(255,152,0,0.4);font-size:0.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;padding:0}
+  .fee-btn:hover{border-color:var(--orange);color:var(--orange)}
+  .fee-btn.paid{background:rgba(255,152,0,0.2);border-color:var(--orange);color:var(--orange)}
+  .type-toggle-btn{font-family:'Noto Sans KR',sans-serif;font-size:0.68rem;font-weight:700;padding:3px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:rgba(255,255,255,0.35);cursor:pointer;transition:all 0.2s;white-space:nowrap;flex-shrink:0}
+  .type-toggle-btn:hover{border-color:var(--purple);color:var(--purple)}
+  .chip-del{background:none;border:none;color:rgba(255,255,255,0.2);cursor:pointer;font-size:0.85rem;padding:0;line-height:1;flex-shrink:0;transition:color 0.2s}
+  .chip-del:hover{color:#ef5350}
+  .bulk-row{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+  .btn-sm{font-family:'Bebas Neue',sans-serif;font-size:0.8rem;letter-spacing:1px;padding:5px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:transparent;color:var(--white);cursor:pointer;transition:all 0.2s}
+  .btn-sm:hover{border-color:var(--green);color:var(--green)}
+  .btn-sm.danger:hover{border-color:#ef5350;color:#ef5350}
+  .btn-sm.fee-bulk:hover{border-color:var(--orange);color:var(--orange)}
+  .empty-state{text-align:center;padding:24px;color:rgba(255,255,255,0.3);font-size:0.88rem}
+  .readonly-notice{text-align:center;padding:12px;background:rgba(255,255,255,0.04);border:1px dashed rgba(255,255,255,0.1);border-radius:10px;font-size:0.8rem;color:rgba(255,255,255,0.3);margin-bottom:14px}
+  .pw-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;align-items:center;justify-content:center}
+  .pw-modal.open{display:flex}
+  .pw-box{background:#1e5c34;border:1px solid rgba(0,200,83,0.3);border-radius:20px;padding:28px 24px;width:90%;max-width:340px;text-align:center}
+  .pw-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:3px;color:var(--green);margin-bottom:6px}
+  .pw-sub{font-size:0.8rem;color:var(--gray);margin-bottom:18px}
+  .pw-input{width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:10px;color:var(--white);font-size:1.1rem;padding:12px;outline:none;text-align:center;letter-spacing:4px;margin-bottom:14px;transition:border-color 0.2s}
+  .pw-input:focus{border-color:var(--green)}
+  .pw-input.error{border-color:var(--red);animation:shake 0.3s ease}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .pw-actions{display:flex;gap:8px}
+  .pw-cancel{flex:1;background:transparent;border:1px solid rgba(255,255,255,0.2);color:var(--white);border-radius:10px;padding:10px;font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:2px;cursor:pointer}
+  .pw-confirm{flex:2;background:var(--green);color:#000;border:none;border-radius:10px;padding:10px;font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:2px;cursor:pointer}
+  .pw-confirm:hover{background:var(--green-dark)}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--green);color:#000;font-weight:700;font-size:0.85rem;padding:10px 22px;border-radius:20px;box-shadow:0 4px 20px rgba(0,200,83,0.4);transition:transform 0.3s ease;z-index:999;white-space:nowrap}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="nav">
+    <a class="nav-btn" href="notice.html">📢 공지</a>
+    <a class="nav-btn" href="index.html">🏸 메인</a>
+    <a class="nav-btn active" href="members.html">👥 멤버</a>
+    <a class="nav-btn" href="history.html">📋 히스토리</a>
+  </nav>
+  <header>
+    <span class="logo-shuttle">👥</span>
+    <div class="page-title">멤버 <span>관리</span></div>
+    <div class="date-badge" id="dateBadge"></div>
+    <div class="conn-badge"><div class="conn-dot" id="connDot"></div><span id="connText">연결 중...</span></div>
+  </header>
+
+  <div class="admin-bar">
+    <div class="admin-status"><div class="admin-dot" id="adminDot"></div><span id="adminStatusText">일반 모드</span></div>
+    <button class="admin-btn-sm" id="adminToggleBtn" onclick="toggleAdminMode()">🔐 운영자 로그인</button>
+  </div>
+
+  <!-- 멤버 추가 (운영자만) -->
+  <div class="card" id="addCard" style="display:none">
+    <div class="section-title">➕ 멤버 추가</div>
+    <div class="add-row">
+      <input class="add-input" type="text" id="memberInput" placeholder="이름" maxlength="12">
+      <input class="add-input add-input-num" type="number" id="ratingInput" placeholder="레이팅" min="1" max="100" value="50">
+      <select class="type-select-add" id="memberTypeInput">
+        <option value="member">정회원</option>
+        <option value="guest">게스트</option>
+      </select>
+      <button class="btn" onclick="addMember()">추가</button>
+    </div>
+  </div>
+
+  <!-- 랭크 기준표 -->
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;padding:10px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px">
+    <span style="font-family:'Bebas Neue',sans-serif;font-size:0.75rem;letter-spacing:2px;color:var(--gray);margin-right:4px;align-self:center">랭크</span>
+    <span style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;padding:3px 10px;border-radius:6px;background:rgba(255,107,107,0.15);color:#ff6b6b">S &nbsp;85~100</span>
+    <span style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;padding:3px 10px;border-radius:6px;background:rgba(255,217,61,0.15);color:#ffd93d">A &nbsp;65~84</span>
+    <span style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;padding:3px 10px;border-radius:6px;background:rgba(107,203,119,0.15);color:#6bcb77">B &nbsp;45~64</span>
+    <span style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;padding:3px 10px;border-radius:6px;background:rgba(77,150,255,0.15);color:#4d96ff">C &nbsp;25~44</span>
+    <span style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;padding:3px 10px;border-radius:6px;background:rgba(176,190,197,0.15);color:#b0bec5">D &nbsp;1~24</span>
+  </div>
+
+  <!-- 출석 + 회비 -->
+  <div class="card">
+    <div class="section-title">
+      ✅ 출석 · 💰 회비
+      <span class="count-badge" id="memberCount">0명</span>
+      <span class="count-badge present-badge" id="presentBadge" style="display:none"></span>
+      <span class="count-badge fee-badge" id="feeBadge" style="display:none"></span>
+    </div>
+
+    <div class="attend-summary">
+      <span class="attend-summary-text">출석 <strong id="presentCount">0</strong> / <strong id="totalCount">0</strong>명</span>
+      <div class="attend-bar-wrap"><div class="attend-bar" id="attendBar" style="width:0%"></div></div>
+    </div>
+
+    <div class="fee-summary">
+      <span class="fee-summary-text">당일 납부 <strong id="feeCount">0</strong> / <strong id="totalCount2">0</strong>명</span>
+      <div class="fee-bar-wrap"><div class="fee-bar" id="feeBar" style="width:0%"></div></div>
+    </div>
+
+    <!-- 월회비 납부자 (운영자만 보임) -->
+    <div class="monthly-box" id="monthlyBox">
+      <div class="monthly-box-title">💜 이번 달 월회비 납부자</div>
+      <div class="monthly-chips" id="monthlyChips"><span style="font-size:0.8rem;color:rgba(255,255,255,0.25)">없음</span></div>
+      <div class="monthly-add">
+        <select class="monthly-select" id="monthlySelect"><option value="">멤버 선택...</option></select>
+        <button class="monthly-add-btn" onclick="addMonthlyFee()">+ 납부 추가</button>
+      </div>
+    </div>
+
+    <!-- 당일 회비 합계 (운영자만) -->
+    <div id="feeTotalBox" style="display:none;margin-bottom:12px;padding:12px 16px;background:rgba(255,152,0,0.1);border:1px solid rgba(255,152,0,0.3);border-radius:12px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:0.8rem;letter-spacing:2px;color:#ff9800;margin-bottom:8px">💰 당일 회비 합계</div>
+      <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;font-size:0.82rem;color:#b0bec5"><span>정회원 (<span id="ftMemberCnt">0</span>명 × 700엔)</span><span id="ftMemberAmt" style="font-family:'Bebas Neue',sans-serif">0엔</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:0.82rem;color:#b0bec5"><span>게스트 (<span id="ftGuestCnt">0</span>명 × 1000엔)</span><span id="ftGuestAmt" style="font-family:'Bebas Neue',sans-serif">0엔</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:0.82rem;color:#ce93d8"><span>월회비 납부자 (<span id="ftMonthlyCnt">0</span>명, 제외)</span><span id="ftMonthlyNote" style="font-family:'Bebas Neue',sans-serif">0명</span></div>
+      </div>
+      <div style="height:1px;background:rgba(255,255,255,0.08);margin-bottom:8px"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:2px;color:#ff9800">합계</span>
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:1px;color:#ffe600" id="feeTotalAmount">0엔</span>
+      </div>
+    </div>
+
+    <div class="filter-tabs">
+      <button class="filter-tab active" onclick="setFilter('all',this)">전체</button>
+      <button class="filter-tab" onclick="setFilter('present',this)">출석</button>
+      <button class="filter-tab" onclick="setFilter('absent',this)">미출석</button>
+      <button class="filter-tab" onclick="setFilter('fee',this)">회비 미납</button>
+      <button class="filter-tab" onclick="setFilter('guest',this)">게스트</button>
+    </div>
+
+    <div class="bulk-row" id="bulkRow" style="display:none">
+      <button class="btn-sm" onclick="bulkAll()">✓ 전체 출석</button>
+      <button class="btn-sm danger" onclick="bulkNone()">✕ 출석 해제</button>
+      <button class="btn-sm fee-bulk" onclick="bulkFeeAll()">💰 전체 납부</button>
+      <button class="btn-sm danger" onclick="bulkFeeNone()">✕ 회비 초기화</button>
+    </div>
+
+    <div id="readonlyNotice" class="readonly-notice" style="display:none">🔐 운영자만 변경할 수 있어요</div>
+    <div class="member-list" id="memberList"><div class="empty-state">연결 중...</div></div>
+  </div>
+</div>
+
+<div class="pw-modal" id="pwModal">
+  <div class="pw-box">
+    <div class="pw-title">🔐 운영자 인증</div>
+    <div class="pw-sub">운영자 비밀번호를 입력하세요</div>
+    <input class="pw-input" id="pwInput" type="password" placeholder="••••••" maxlength="20">
+    <div class="pw-actions">
+      <button class="pw-cancel" onclick="closePwModal()">취소</button>
+      <button class="pw-confirm" onclick="confirmPassword()">확인</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey:"AIzaSyCTcxZfr-L-oe25DJyNMj3e8vdEgmbgqog",
+    authDomain:"tokyo-smash.firebaseapp.com",
+    databaseURL:"https://tokyo-smash-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId:"tokyo-smash",storageBucket:"tokyo-smash.firebasestorage.app",
+    messagingSenderId:"885467955971",
+    appId:"1:885467955971:web:e1ad21d28e0a910a02df36",
+    measurementId:"G-D6V57RK9VK"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const todayKey = new Date().toISOString().slice(0,10);
+  const monthKey = todayKey.slice(0,7);
+
+  document.getElementById('dateBadge').textContent = new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
+  onValue(ref(db,'.info/connected'),snap=>{
+    const on=snap.val();
+    document.getElementById('connDot').className='conn-dot'+(on?' online':'');
+    document.getElementById('connText').textContent=on?'실시간 연결됨 ✓':'오프라인';
+  });
+
+  let members={}, present={}, fee={}, monthlyFee={}, currentFilter='all';
+  let isAdmin = sessionStorage.getItem('ts_admin')==='1';
+
+  // ── 운영자 ──
+  function applyAdminUI(){
+    const dot=document.getElementById('adminDot');
+    const txt=document.getElementById('adminStatusText');
+    const btn=document.getElementById('adminToggleBtn');
+    const addCard=document.getElementById('addCard');
+    const bulkRow=document.getElementById('bulkRow');
+    const roNotice=document.getElementById('readonlyNotice');
+    const monthlyBox=document.getElementById('monthlyBox');
+
+    if(isAdmin){
+      dot.className='admin-dot on';
+      txt.textContent='운영자 모드 ✓';
+      btn.textContent='🔓 로그아웃';
+      addCard.style.display='';
+      bulkRow.style.display='';
+      roNotice.style.display='none';
+      monthlyBox.style.display='';
+      document.getElementById('feeTotalBox').style.display='';
+    } else {
+      dot.className='admin-dot';
+      txt.textContent='일반 모드';
+      btn.textContent='🔐 운영자 로그인';
+      addCard.style.display='none';
+      bulkRow.style.display='none';
+      roNotice.style.display='';
+      monthlyBox.style.display='none';
+      document.getElementById('feeTotalBox').style.display='none';
+    }
+    render();
+  }
+
+  window.toggleAdminMode=function(){
+    if(isAdmin){isAdmin=false;sessionStorage.removeItem('ts_admin');applyAdminUI();toast('로그아웃됨');}
+    else openPwModal();
+  };
+  window.openPwModal=function(){
+    document.getElementById('pwInput').value='';
+    document.getElementById('pwInput').className='pw-input';
+    document.getElementById('pwModal').classList.add('open');
+    setTimeout(()=>document.getElementById('pwInput').focus(),100);
+  };
+  window.closePwModal=function(){document.getElementById('pwModal').classList.remove('open');};
+  window.confirmPassword=async function(){
+    const val=document.getElementById('pwInput').value;
+    try{
+      const snap=await new Promise(res=>onValue(ref(db,'config/adminPw'),res,{onlyOnce:true}));
+      const pw=snap.val();
+      if(val===pw){isAdmin=true;sessionStorage.setItem('ts_admin','1');closePwModal();applyAdminUI();toast('운영자 모드 활성화 ✓');}
+      else{const inp=document.getElementById('pwInput');inp.className='pw-input error';inp.value='';setTimeout(()=>inp.className='pw-input',600);toast('비밀번호가 틀렸어요');}
+    }catch(e){toast('연결 오류, 다시 시도해주세요');}
+  };
+  document.getElementById('pwInput').addEventListener('keydown',e=>{if(e.key==='Enter')window.confirmPassword();});
+  document.getElementById('pwModal').addEventListener('click',e=>{if(e.target.id==='pwModal')closePwModal();});
+
+  // ── 데이터 구독 ──
+  onValue(ref(db,'members'),snap=>{members=snap.val()||{};render();updateMonthlySelect();});
+  onValue(ref(db,`present/${todayKey}`),snap=>{present=snap.val()||{};render();});
+  onValue(ref(db,`fee/${todayKey}`),snap=>{fee=snap.val()||{};render();updateFeeTotal();});
+  onValue(ref(db,`monthlyFee/${monthKey}`),snap=>{monthlyFee=snap.val()||{};renderMonthlyChips();render();updateFeeTotal();});
+
+  // ── 렌더 ──
+  function render(){
+    const list=document.getElementById('memberList');
+    const entries=Object.entries(members);
+    const total=entries.length;
+    const cnt=Object.keys(present).length;
+    const feeCnt=Object.keys(fee).length;
+
+    document.getElementById('memberCount').textContent=total+'명';
+    document.getElementById('presentCount').textContent=cnt;
+    document.getElementById('totalCount').textContent=total;
+    document.getElementById('totalCount2').textContent=cnt;
+    document.getElementById('feeCount').textContent=feeCnt;
+    document.getElementById('attendBar').style.width=total>0?(cnt/total*100)+'%':'0%';
+    document.getElementById('feeBar').style.width=cnt>0?(feeCnt/cnt*100)+'%':'0%';
+
+    const pb=document.getElementById('presentBadge');
+    if(cnt>0){pb.style.display='';pb.textContent=`출석 ${cnt}명`;}else pb.style.display='none';
+    const fb=document.getElementById('feeBadge');
+    if(feeCnt>0){fb.style.display='';fb.textContent=`납부 ${feeCnt}명`;}else fb.style.display='none';
+
+    let filtered=entries.filter(([id])=>{
+      if(currentFilter==='present') return !!present[id];
+      if(currentFilter==='absent') return !present[id];
+      if(currentFilter==='fee') return present[id]&&!fee[id]&&!monthlyFee[id];
+      if(currentFilter==='guest') return members[id]?.type==='guest';
+      return true;
+    });
+
+    if(!filtered.length){
+      const msgs={present:'아직 출석한 멤버가 없어요',absent:'미출석 멤버가 없어요',fee:'회비 미납 멤버가 없어요!',guest:'게스트가 없어요'};
+      list.innerHTML=`<div class="empty-state">${msgs[currentFilter]||'멤버를 추가해주세요'}</div>`;
+      return;
+    }
+
+    filtered.sort(([aId],[bId])=>{
+      const aP=!!present[aId],bP=!!present[bId];
+      if(aP&&!bP)return -1;if(!aP&&bP)return 1;return 0;
+    });
+
+    list.innerHTML=filtered.map(([id,m])=>{
+      const r=m.rating??50;
+      const rc=r>=80?'r-top':r>=60?'r-high':r>=35?'r-mid':'r-low';
+      const {rank,color:rankColor}=getRank(r);
+      const isP=!!present[id];
+      const isPaid=!!fee[id];
+      const isMonthly=!!monthlyFee[id];
+      const isGuest=m.type==='guest';
+      const tags=[];
+      if(isP) tags.push(`<span class="tag tag-present">출석</span>`);
+      if(isGuest) tags.push(`<span class="tag tag-guest">게스트</span>`);
+      if(isMonthly) tags.push(`<span class="tag tag-monthly">💜 월회비</span>`);
+      else if(isPaid) tags.push(`<span class="tag tag-fee">💰 납부</span>`);
+      if(!isP) tags.push(`<span class="tag tag-absent">미출석</span>`);
+
+      return `<div class="member-row ${isP?'present':''}">
+        <button class="member-check-btn" onclick="togglePresent('${id}')">${isP?'✓':''}</button>
+        <div class="member-info">
+          <div class="member-name">${esc(m.name)}</div>
+          <div class="member-tags">${tags.join('')}</div>
+        </div>
+        ${isAdmin?`<div class="rating-ctrl">
+          <button class="rating-btn" onclick="changeRating('${id}',-5)">−</button>
+          <input type="number" min="1" max="100" value="${r}"
+            style="width:44px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:6px;color:#f5fff7;font-family:'Bebas Neue',sans-serif;font-size:1rem;text-align:center;padding:2px 4px;outline:none"
+            onchange="setRating('${id}',this.value)"
+            onfocus="this.select()">
+          <button class="rating-btn" onclick="changeRating('${id}',+5)">＋</button>
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:0.9rem;font-weight:700;color:${rankColor};min-width:18px;text-align:center">${rank}</span>
+        </div>`:`<span style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;font-weight:700;color:${rankColor};min-width:24px;text-align:center;flex-shrink:0">${rank}</span>`}
+        ${isAdmin?`<button class="type-toggle-btn" onclick="toggleMemberType('${id}')">${isGuest?'→정회원':'게스트↔'}</button>`:''}
+        ${!isMonthly?`<button class="fee-btn ${isPaid?'paid':''}" onclick="toggleFee('${id}')">💰</button>`:'<span style="font-size:0.85rem;color:var(--purple);min-width:28px;text-align:center">💜</span>'}
+        ${isAdmin&&!isGuest?`<button class="fee-btn ${isMonthly?'paid':''}" style="border-color:rgba(206,147,216,0.3);color:${isMonthly?'#ce93d8':'rgba(206,147,216,0.4)'};${isMonthly?'background:rgba(206,147,216,0.2)':''}" onclick="${isMonthly?`removeMonthlyFee('${id}')`:`addMonthlyFeeById('${id}')`}" title="월회비 납부 토글">💜</button>`:''}
+        ${isAdmin?`<button class="chip-del" onclick="deleteMember('${id}')">✕</button>`:''}
+      </div>`;
+    }).join('');
+  }
+
+  // ── 월회비 칩 렌더 ──
+  function renderMonthlyChips(){
+    const el=document.getElementById('monthlyChips');
+    const entries=Object.entries(monthlyFee);
+    updateFeeTotal();
+
+    if(!entries.length){
+      el.innerHTML='<span style="font-size:0.8rem;color:rgba(255,255,255,0.25)">없음</span>';
+      return;
+    }
+    el.innerHTML=entries.map(([id])=>{
+      const name=members[id]?.name||'(탈퇴)';
+      return `<div class="monthly-chip">${esc(name)}<button onclick="removeMonthlyFee('${id}')">✕</button></div>`;
+    }).join('');
+  }
+
+  function updateMonthlySelect(){
+    const sel=document.getElementById('monthlySelect');
+    const regularMembers=Object.entries(members).filter(([,m])=>m.type!=='guest');
+    sel.innerHTML='<option value="">멤버 선택...</option>'+
+      regularMembers.map(([id,m])=>`<option value="${id}">${esc(m.name)}</option>`).join('');
+  }
+
+  window.addMonthlyFee=async function(){
+    if(!isAdmin)return;
+    const id=document.getElementById('monthlySelect').value;
+    if(!id){toast('멤버를 선택해주세요');return;}
+    if(monthlyFee[id]){toast('이미 납부 처리됐어요');return;}
+    await set(ref(db,`monthlyFee/${monthKey}/${id}`),true);
+    document.getElementById('monthlySelect').value='';
+    toast(`${members[id]?.name} 월회비 납부 처리 💜`);
+  };
+
+  window.addMonthlyFeeById=async function(id){
+    if(!isAdmin)return;
+    if(monthlyFee[id]){toast('이미 납부 처리됐어요');return;}
+    await set(ref(db,`monthlyFee/${monthKey}/${id}`),true);
+    toast(`${members[id]?.name} 월회비 납부 처리 💜`);
+  };
+
+  window.removeMonthlyFee=async function(id){
+    if(!isAdmin)return;
+    await remove(ref(db,`monthlyFee/${monthKey}/${id}`));
+    toast('월회비 납부 취소');
+  };
+
+  // ── 멤버 조작 ──
+  function updateFeeTotal(){
+    const presentIds=Object.keys(present).filter(id=>members[id]);
+    let memberFee=0, guestFee=0, monthlyCount=0;
+    for(const id of presentIds){
+      if(monthlyFee[id]){monthlyCount++;continue;}
+      if(!fee[id]) continue;
+      if(members[id]?.type==='guest') guestFee+=1000;
+      else memberFee+=700;
+    }
+    const memberCnt=Math.round(memberFee/700);
+    const guestCnt=Math.round(guestFee/1000);
+    document.getElementById('ftMemberCnt').textContent=memberCnt;
+    document.getElementById('ftMemberAmt').textContent=memberFee.toLocaleString()+'엔';
+    document.getElementById('ftGuestCnt').textContent=guestCnt;
+    document.getElementById('ftGuestAmt').textContent=guestFee.toLocaleString()+'엔';
+    document.getElementById('ftMonthlyCnt').textContent=monthlyCount;
+    document.getElementById('ftMonthlyNote').textContent=monthlyCount+'명';
+    document.getElementById('feeTotalAmount').textContent=(memberFee+guestFee).toLocaleString()+'엔';
+  }
+
+  window.setFilter=function(f,el){
+    currentFilter=f;
+    document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
+    el.classList.add('active');
+    render();
+  };
+
+  window.addMember=async function(){
+    if(!isAdmin)return;
+    const name=document.getElementById('memberInput').value.trim();
+    const rating=Math.max(1,Math.min(100,parseInt(document.getElementById('ratingInput').value)||50));
+    const type=document.getElementById('memberTypeInput').value;
+    if(!name)return;
+    if(Object.values(members).some(m=>m.name===name)){toast('이미 있는 멤버예요!');return;}
+    await set(ref(db,`members/member_${Date.now()}`),{name,rating,type});
+    document.getElementById('memberInput').value='';
+    document.getElementById('ratingInput').value=50;
+    document.getElementById('memberTypeInput').value='member';
+    toast(`${name} (${type==='guest'?'게스트':'정회원'}) 추가됨 ✓`);
+  };
+
+  window.deleteMember=async function(id){
+    if(!isAdmin)return;
+    if(!confirm('정말 삭제할까요?'))return;
+    await remove(ref(db,`members/${id}`));
+    await remove(ref(db,`present/${todayKey}/${id}`));
+    await remove(ref(db,`fee/${todayKey}/${id}`));
+    toast('멤버 삭제됨');
+  };
+
+  window.toggleMemberType=async function(id){
+    if(!isAdmin)return;
+    const current=members[id]?.type||'member';
+    const next=current==='guest'?'member':'guest';
+    await update(ref(db,`members/${id}`),{type:next});
+    toast(`${members[id]?.name} → ${next==='guest'?'게스트':'정회원'} 전환`);
+  };
+
+  window.togglePresent=async function(id){
+    if(!isAdmin){toast('운영자만 출석 체크를 변경할 수 있어요');return;}
+    if(present[id])await remove(ref(db,`present/${todayKey}/${id}`));
+    else await set(ref(db,`present/${todayKey}/${id}`),true);
+  };
+
+  window.toggleFee=async function(id){
+    if(!isAdmin){toast('운영자만 회비를 변경할 수 있어요');return;}
+    if(fee[id]){await remove(ref(db,`fee/${todayKey}/${id}`));toast('회비 납부 취소');}
+    else{await set(ref(db,`fee/${todayKey}/${id}`),true);toast('💰 회비 납부 완료!');}
+  };
+
+  window.setRating=async function(id,val){
+    if(!isAdmin)return;
+    const r=Math.max(1,Math.min(100,parseInt(val)||1));
+    await update(ref(db,`members/${id}`),{rating:r});
+  };
+
+  window.changeRating=async function(id,delta){
+    if(!isAdmin)return;
+    const r=members[id]?.rating??50;
+    await update(ref(db,`members/${id}`),{rating:Math.max(1,Math.min(100,r+delta))});
+  };
+
+  window.bulkAll=async function(){if(!isAdmin)return;const ups={};for(const id of Object.keys(members))ups[`present/${todayKey}/${id}`]=true;await update(ref(db),ups);toast('전체 출석 체크 ✓');};
+  window.bulkNone=async function(){if(!isAdmin)return;await remove(ref(db,`present/${todayKey}`));toast('전체 출석 해제');};
+  window.bulkFeeAll=async function(){if(!isAdmin)return;const ups={};for(const id of Object.keys(present))ups[`fee/${todayKey}/${id}`]=true;await update(ref(db),ups);toast('출석 멤버 전체 납부 처리 💰');};
+  window.bulkFeeNone=async function(){if(!isAdmin)return;await remove(ref(db,`fee/${todayKey}`));toast('회비 전체 초기화');};
+
+  applyAdminUI();
+  document.getElementById('memberInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')window.addMember();});
+  document.getElementById('ratingInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')window.addMember();});
+
+  function getRank(rating){
+    if(rating>=85) return {rank:'S',color:'#ff6b6b'};
+    if(rating>=65) return {rank:'A',color:'#ffd93d'};
+    if(rating>=45) return {rank:'B',color:'#6bcb77'};
+    if(rating>=25) return {rank:'C',color:'#4d96ff'};
+    return {rank:'D',color:'#b0bec5'};
+  }
+
+  function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  let tt;
+  function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2800);}
+</script>
+</body>
+</html>
