@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#00c853">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tokyo Smash">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tokyo Smash · 결과 입력</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;600;700&display=swap');
+  :root{--green:#00c853;--green-dark:#009624;--green-light:#b9f6ca;--court:#1a472a;--white:#f5fff7;--gray:#b0bec5;--accent:#ffe600;--orange:#ff9800;--red:#ef5350;--purple:#ce93d8;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Noto Sans KR',sans-serif;background:var(--court);color:var(--white);min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(255,255,255,0.04) 59px,rgba(255,255,255,0.04) 61px),repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(255,255,255,0.04) 59px,rgba(255,255,255,0.04) 61px);pointer-events:none;z-index:0}
+  .container{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 16px 100px}
+  .nav{display:flex;gap:6px;justify-content:center;padding:16px 0 0;flex-wrap:wrap}
+  .nav-btn{font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:2px;padding:7px 16px;border-radius:20px;border:1px solid rgba(255,255,255,0.2);background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+  .nav-btn.active{background:var(--green);border-color:var(--green);color:#000}
+  .nav-btn:hover:not(.active){border-color:var(--green);color:var(--green)}
+  header{text-align:center;padding:24px 0 20px}
+  .logo-shuttle{font-size:2rem;display:block;animation:spin-float 3s ease-in-out infinite}
+  @keyframes spin-float{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-8px) rotate(8deg)}}
+  .page-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,6vw,2.6rem);letter-spacing:4px;color:var(--white);text-shadow:0 0 20px rgba(0,200,83,0.5),2px 2px 0 var(--green-dark)}
+  .page-title span{color:var(--accent)}
+  .conn-badge{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:0.75rem;color:var(--white);background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:20px;padding:4px 12px}
+  .conn-dot{width:8px;height:8px;border-radius:50%;background:var(--gray);transition:background 0.3s}
+  .conn-dot.online{background:#00ff88;box-shadow:0 0 6px #00ff88}
+  .admin-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.07);border-radius:10px;margin-bottom:14px}
+  .admin-status{display:flex;align-items:center;gap:7px;font-size:0.78rem;color:var(--gray)}
+  .admin-dot{width:7px;height:7px;border-radius:50%;background:var(--gray);flex-shrink:0}
+  .admin-dot.on{background:var(--accent);box-shadow:0 0 5px var(--accent)}
+  .admin-btn-sm{font-family:'Bebas Neue',sans-serif;font-size:0.78rem;letter-spacing:1px;padding:4px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:rgba(255,255,255,0.4);cursor:pointer;transition:all 0.2s}
+  .admin-btn-sm:hover{border-color:var(--accent);color:var(--accent)}
+  .card{background:rgba(255,255,255,0.05);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px;margin-bottom:20px}
+  .section-title{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:3px;color:var(--green);margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .locked-notice{text-align:center;padding:40px 20px;color:rgba(255,255,255,0.3);font-size:0.9rem}
+
+  /* 날짜 입력 */
+  .date-row{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+  .date-label{font-size:0.85rem;color:var(--gray);flex-shrink:0}
+  .date-input{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:var(--white);font-family:'Noto Sans KR',sans-serif;font-size:0.9rem;padding:8px 12px;outline:none;transition:border-color 0.2s}
+  .date-input:focus{border-color:var(--green)}
+
+  /* 매치 카드 */
+  .match-card{background:rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;margin-bottom:14px}
+  .match-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .match-label{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;color:var(--green)}
+  .match-del-btn{background:none;border:none;color:rgba(255,255,255,0.2);cursor:pointer;font-size:0.9rem;transition:color 0.2s}
+  .match-del-btn:hover{color:var(--red)}
+
+  /* 코트 행 */
+  .court-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+  .court-label{font-family:'Bebas Neue',sans-serif;font-size:0.75rem;letter-spacing:2px;color:rgba(0,200,83,0.6);min-width:60px;flex-shrink:0}
+  .player-select{flex:1;min-width:80px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:var(--white);font-family:'Noto Sans KR',sans-serif;font-size:0.82rem;padding:6px 8px;outline:none;cursor:pointer}
+  .player-select option{background:#1a472a}
+  .vs-text{font-family:'Bebas Neue',sans-serif;font-size:0.9rem;color:rgba(255,230,0,0.5);flex-shrink:0}
+  .score-box{display:flex;align-items:center;gap:4px;flex-shrink:0}
+  .score-in{width:44px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:var(--white);font-family:'Bebas Neue',sans-serif;font-size:1rem;padding:5px 6px;outline:none;text-align:center}
+  .score-in:focus{border-color:var(--green)}
+  .score-in::-webkit-inner-spin-button{opacity:0.4}
+  .score-dash{font-family:'Bebas Neue',sans-serif;color:var(--gray)}
+
+  /* 코트 추가 버튼 */
+  .add-court-btn{width:100%;padding:7px;background:transparent;border:1px dashed rgba(0,200,83,0.25);border-radius:8px;color:rgba(0,200,83,0.4);font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:2px;cursor:pointer;transition:all 0.2s;margin-top:4px}
+  .add-court-btn:hover{border-color:var(--green);color:var(--green)}
+
+  /* 매치 추가 버튼 */
+  .add-match-btn{width:100%;padding:12px;background:transparent;border:1px dashed rgba(0,200,83,0.3);border-radius:12px;color:rgba(0,200,83,0.5);font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:2px;cursor:pointer;transition:all 0.2s;margin-bottom:16px}
+  .add-match-btn:hover{border-color:var(--green);color:var(--green)}
+
+  /* 저장 버튼 */
+  .save-btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--green),var(--green-dark));color:#000;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:3px;border:none;border-radius:14px;cursor:pointer;box-shadow:0 4px 20px rgba(0,200,83,0.35);transition:all 0.2s}
+  .save-btn:hover{box-shadow:0 6px 28px rgba(0,200,83,0.5)}
+  .save-btn:disabled{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.3);box-shadow:none;cursor:not-allowed}
+
+  /* 저장된 기록 */
+  .saved-list{display:flex;flex-direction:column;gap:8px;max-height:300px;overflow-y:auto}
+  .saved-item{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px;font-size:0.8rem}
+  .saved-item-info{color:var(--white)}
+  .saved-item-meta{color:var(--gray);font-size:0.72rem;margin-top:2px}
+  .saved-del-btn{background:none;border:none;color:rgba(255,255,255,0.2);cursor:pointer;font-size:0.85rem;transition:color 0.2s}
+  .saved-del-btn:hover{color:var(--red)}
+
+  .pw-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;align-items:center;justify-content:center}
+  .pw-modal.open{display:flex}
+  .pw-box{background:#1e5c34;border:1px solid rgba(0,200,83,0.3);border-radius:20px;padding:28px 24px;width:90%;max-width:340px;text-align:center}
+  .pw-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:3px;color:var(--green);margin-bottom:6px}
+  .pw-sub{font-size:0.8rem;color:var(--gray);margin-bottom:18px}
+  .pw-input{width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:10px;color:var(--white);font-size:1.1rem;padding:12px;outline:none;text-align:center;letter-spacing:4px;margin-bottom:14px;transition:border-color 0.2s}
+  .pw-input:focus{border-color:var(--green)}
+  .pw-input.error{border-color:var(--red);animation:shake 0.3s ease}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .pw-actions{display:flex;gap:8px}
+  .pw-cancel{flex:1;background:transparent;border:1px solid rgba(255,255,255,0.2);color:var(--white);border-radius:10px;padding:10px;font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:2px;cursor:pointer}
+  .pw-confirm{flex:2;background:var(--green);color:#000;border:none;border-radius:10px;padding:10px;font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:2px;cursor:pointer}
+  .pw-confirm:hover{background:var(--green-dark)}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--green);color:#000;font-weight:700;font-size:0.85rem;padding:10px 22px;border-radius:20px;box-shadow:0 4px 20px rgba(0,200,83,0.4);transition:transform 0.3s ease;z-index:999;white-space:nowrap}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="nav">
+    <a class="nav-btn" href="notice.html">📢 공지</a>
+    <a class="nav-btn" href="index.html">🏸 메인</a>
+    <a class="nav-btn" href="members.html">👥 멤버</a>
+    <a class="nav-btn" href="history.html">📋 히스토리</a>
+  </nav>
+
+  <header>
+    <span class="logo-shuttle">📝</span>
+    <div class="page-title">결과 <span>입력</span></div>
+    <div class="conn-badge"><div class="conn-dot" id="connDot"></div><span id="connText">연결 중...</span></div>
+  </header>
+
+  <div class="admin-bar">
+    <div class="admin-status"><div class="admin-dot" id="adminDot"></div><span id="adminStatusText">일반 모드</span></div>
+    <button class="admin-btn-sm" id="adminToggleBtn" onclick="toggleAdminMode()">🔐 운영자 로그인</button>
+  </div>
+
+  <!-- 결과 입력 (운영자만) -->
+  <div id="inputSection">
+    <div class="card">
+      <div class="locked-notice">🔐 운영자만 결과를 입력할 수 있어요</div>
+    </div>
+  </div>
+
+  <!-- 저장된 기록 -->
+  <div class="card" id="savedSection" style="display:none">
+    <div class="section-title">✅ 저장된 기록</div>
+    <div class="saved-list" id="savedList"></div>
+  </div>
+</div>
+
+<div class="pw-modal" id="pwModal">
+  <div class="pw-box">
+    <div class="pw-title">🔐 운영자 인증</div>
+    <div class="pw-sub">운영자 비밀번호를 입력하세요</div>
+    <input class="pw-input" id="pwInput" type="password" placeholder="••••••" maxlength="20">
+    <div class="pw-actions">
+      <button class="pw-cancel" onclick="closePwModal()">취소</button>
+      <button class="pw-confirm" onclick="confirmPassword()">확인</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey:"AIzaSyCTcxZfr-L-oe25DJyNMj3e8vdEgmbgqog",
+    authDomain:"tokyo-smash.firebaseapp.com",
+    databaseURL:"https://tokyo-smash-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId:"tokyo-smash",storageBucket:"tokyo-smash.firebasestorage.app",
+    messagingSenderId:"885467955971",
+    appId:"1:885467955971:web:e1ad21d28e0a910a02df36",
+    measurementId:"G-D6V57RK9VK"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  let members = {}, isAdmin = sessionStorage.getItem('ts_admin')==='1';
+  // 매치 구조: [{courts:[{playerA1,playerA2,playerB1,playerB2,scoreA,scoreB}]}]
+  let matchData = [{ courts:[emptyCourt()] }];
+
+  onValue(ref(db,'.info/connected'), snap=>{
+    const on=snap.val();
+    document.getElementById('connDot').className='conn-dot'+(on?' online':'');
+    document.getElementById('connText').textContent=on?'실시간 연결됨 ✓':'오프라인';
+  });
+  onValue(ref(db,'members'), snap=>{ members=snap.val()||{}; applyAdminUI(); });
+  onValue(ref(db,'history'), snap=>{ renderSaved(snap.val()||{}); });
+
+  function emptyCourt(){ return {pA1:'',pA2:'',pB1:'',pB2:'',scoreA:'',scoreB:''}; }
+
+  // ── 운영자 ──
+  function applyAdminUI(){
+    const dot=document.getElementById('adminDot');
+    const txt=document.getElementById('adminStatusText');
+    const btn=document.getElementById('adminToggleBtn');
+    if(isAdmin){
+      dot.className='admin-dot on'; txt.textContent='운영자 모드 ✓'; btn.textContent='🔓 로그아웃';
+      renderInputSection();
+      document.getElementById('savedSection').style.display='';
+    } else {
+      dot.className='admin-dot'; txt.textContent='일반 모드'; btn.textContent='🔐 운영자 로그인';
+      document.getElementById('inputSection').innerHTML='<div class="card"><div class="locked-notice">🔐 운영자만 결과를 입력할 수 있어요</div></div>';
+      document.getElementById('savedSection').style.display='none';
+    }
+  }
+
+  window.toggleAdminMode=function(){
+    if(isAdmin){isAdmin=false;sessionStorage.removeItem('ts_admin');applyAdminUI();toast('로그아웃됨');}
+    else openPwModal();
+  };
+  window.openPwModal=function(){document.getElementById('pwInput').value='';document.getElementById('pwInput').className='pw-input';document.getElementById('pwModal').classList.add('open');setTimeout(()=>document.getElementById('pwInput').focus(),100);};
+  window.closePwModal=function(){document.getElementById('pwModal').classList.remove('open');};
+  window.confirmPassword=async function(){
+    const val=document.getElementById('pwInput').value;
+    try{
+      const snap=await new Promise(res=>onValue(ref(db,'config/adminPw'),res,{onlyOnce:true}));
+      if(val===snap.val()){isAdmin=true;sessionStorage.setItem('ts_admin','1');closePwModal();applyAdminUI();toast('운영자 모드 활성화 ✓');}
+      else{const inp=document.getElementById('pwInput');inp.className='pw-input error';inp.value='';setTimeout(()=>inp.className='pw-input',600);toast('비밀번호가 틀렸어요');}
+    }catch(e){toast('연결 오류');}
+  };
+  document.getElementById('pwInput').addEventListener('keydown',e=>{if(e.key==='Enter')window.confirmPassword();});
+  document.getElementById('pwModal').addEventListener('click',e=>{if(e.target.id==='pwModal')closePwModal();});
+
+  // ── 입력 UI 렌더 ──
+  function renderInputSection(){
+    const memberOptions = Object.values(members)
+      .sort((a,b)=>a.name.localeCompare(b.name,'ko'))
+      .map(m=>`<option value="${esc(m.name)}">${esc(m.name)}</option>`).join('');
+
+    const matchCards = matchData.map((match,mi)=>{
+      const courtRows = match.courts.map((c,ci)=>`
+        <div class="court-row" id="court_${mi}_${ci}">
+          <span class="court-label">COURT ${ci+1}</span>
+          <select class="player-select" onchange="updateCourt(${mi},${ci},'pA1',this.value)">
+            <option value="">선수 A1</option>${memberOptions}
+          </select>
+          <select class="player-select" onchange="updateCourt(${mi},${ci},'pA2',this.value)">
+            <option value="">선수 A2</option>${memberOptions}
+          </select>
+          <span class="vs-text">VS</span>
+          <select class="player-select" onchange="updateCourt(${mi},${ci},'pB1',this.value)">
+            <option value="">선수 B1</option>${memberOptions}
+          </select>
+          <select class="player-select" onchange="updateCourt(${mi},${ci},'pB2',this.value)">
+            <option value="">선수 B2</option>${memberOptions}
+          </select>
+          <div class="score-box">
+            <input class="score-in" type="number" min="0" max="99" placeholder="A" onchange="updateCourt(${mi},${ci},'scoreA',this.value)">
+            <span class="score-dash">:</span>
+            <input class="score-in" type="number" min="0" max="99" placeholder="B" onchange="updateCourt(${mi},${ci},'scoreB',this.value)">
+          </div>
+        </div>`).join('');
+
+      return `<div class="match-card">
+        <div class="match-header">
+          <span class="match-label">매치 ${mi+1}</span>
+          ${matchData.length>1?`<button class="match-del-btn" onclick="removeMatch(${mi})">✕ 삭제</button>`:''}
+        </div>
+        ${courtRows}
+        <button class="add-court-btn" onclick="addCourt(${mi})">+ 코트 추가</button>
+      </div>`;
+    }).join('');
+
+    document.getElementById('inputSection').innerHTML=`
+      <div class="card">
+        <div class="section-title">📝 과거 결과 입력</div>
+        <div class="date-row">
+          <span class="date-label">날짜</span>
+          <input class="date-input" type="date" id="resultDate" value="${new Date().toISOString().slice(0,10)}">
+        </div>
+        ${matchCards}
+        <button class="add-match-btn" onclick="addMatch()">+ 매치 추가</button>
+        <button class="save-btn" onclick="saveResults()">💾 히스토리에 저장</button>
+      </div>`;
+  }
+
+  window.updateCourt=function(mi,ci,field,val){ matchData[mi].courts[ci][field]=val; };
+  window.addCourt=function(mi){ matchData[mi].courts.push(emptyCourt()); renderInputSection(); };
+  window.addMatch=function(){ matchData.push({courts:[emptyCourt()]}); renderInputSection(); };
+  window.removeMatch=function(mi){ matchData.splice(mi,1); renderInputSection(); };
+
+  window.saveResults=async function(){
+    const date=document.getElementById('resultDate')?.value;
+    if(!date){toast('날짜를 선택해주세요');return;}
+
+    const ups={};
+    let count=0;
+
+    for(let mi=0;mi<matchData.length;mi++){
+      const match=matchData[mi];
+      for(let ci=0;ci<match.courts.length;ci++){
+        const c=match.courts[ci];
+        if(!c.pA1||!c.pA2||!c.pB1||!c.pB2){toast(`매치${mi+1} 코트${ci+1}: 선수를 모두 선택해주세요`);return;}
+        if(c.scoreA===''||c.scoreB===''){toast(`매치${mi+1} 코트${ci+1}: 점수를 입력해주세요`);return;}
+        const sA=parseInt(c.scoreA), sB=parseInt(c.scoreB);
+        if(sA===sB){toast(`매치${mi+1} 코트${ci+1}: 동점은 입력할 수 없어요`);return;}
+        const winner=sA>sB?'A':'B';
+        const key=`${date}_m${mi+1}c${ci+1}_${Date.now()}`;
+        ups[`history/${key}`]={
+          date, court:ci+1,
+          teamA:[c.pA1,c.pA2],
+          teamB:[c.pB1,c.pB2],
+          scoreA:sA, scoreB:sB,
+          winner,
+          createdAt:Date.now()+(mi*1000+ci)
+        };
+        count++;
+      }
+    }
+
+    await update(ref(db),ups);
+    toast(`✓ ${count}경기 히스토리 저장 완료!`);
+    matchData=[{courts:[emptyCourt()]}];
+    renderInputSection();
+  };
+
+  // ── 저장된 기록 ──
+  function renderSaved(history){
+    const list=document.getElementById('savedList');
+    if(!list) return;
+    const entries=Object.entries(history).sort((a,b)=>b[1].createdAt-a[1].createdAt).slice(0,20);
+    if(!entries.length){list.innerHTML='<div style="text-align:center;padding:16px;color:rgba(255,255,255,0.3);font-size:0.85rem">저장된 기록이 없어요</div>';return;}
+    list.innerHTML=entries.map(([id,h])=>{
+      const date=new Date(h.date+'T00:00:00').toLocaleDateString('ko-KR',{month:'short',day:'numeric'});
+      const winner=h.winner==='A'?h.teamA:h.teamB;
+      return `<div class="saved-item">
+        <div>
+          <div class="saved-item-info">${date} C${h.court} · ${h.teamA.join('+')} vs ${h.teamB.join('+')}</div>
+          <div class="saved-item-meta">팀${h.winner} 승 ${h.scoreA}:${h.scoreB}</div>
+        </div>
+        <button class="saved-del-btn" onclick="deleteHistory('${id}')">✕</button>
+      </div>`;
+    }).join('');
+  }
+
+  window.deleteHistory=async function(id){
+    if(!isAdmin){toast('운영자만 삭제할 수 있어요');return;}
+    if(!confirm('이 기록을 삭제할까요?')) return;
+    await remove(ref(db,`history/${id}`));
+    toast('기록 삭제됨');
+  };
+
+  applyAdminUI();
+
+  function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  let tt;
+  function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),3000);}
+</script>
+</body>
+</html>

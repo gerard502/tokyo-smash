@@ -1,0 +1,22 @@
+{
+  "name": "Tokyo Smash",
+  "short_name": "TokyoSmash",
+  "description": "Tokyo Smash 배드민턴 동아리",
+  "start_url": "/tokyo-smash/",
+  "display": "standalone",
+  "background_color": "#1a472a",
+  "theme_color": "#00c853",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
